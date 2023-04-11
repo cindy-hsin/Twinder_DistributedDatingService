@@ -6,13 +6,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="Config" />
         <module name="MatchesServlet" />
-        <module name="PostServlet" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="GetServlet" target="11" />
-    </bytecodeTargetLevel>
   </component>
 </project>
