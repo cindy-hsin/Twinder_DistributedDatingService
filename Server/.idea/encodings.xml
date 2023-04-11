@@ -9,6 +9,8 @@
     <file url="file://$PROJECT_DIR$/MatchesServlet/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/PostServlet/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/PostServlet/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/StatsServlet/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/StatsServlet/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
   </component>

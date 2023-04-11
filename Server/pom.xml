@@ -31,7 +31,7 @@
     <module>Config</module>
     <!--    <module>Consumer</module>-->
         <module>MatchesServlet</module>
-<!--    <module>StatsServlet</module>-->
+    <module>StatsServlet</module>
   </modules>
 
   <properties>

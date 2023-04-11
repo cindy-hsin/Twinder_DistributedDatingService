@@ -1,8 +1,8 @@
-package assignment4.matchesservlet;
+package assignment4.statsservlet;
 
 import static com.mongodb.client.model.Filters.eq;
 import assignment4.config.constant.MongoConnectionInfo;
-import assignment4.config.datamodel.Matches;
+import assignment4.config.datamodel.MatchStats;
 import assignment4.config.datamodel.ResponseMsg;
 import com.google.gson.Gson;
 import com.mongodb.MongoClientSettings;
@@ -12,9 +12,6 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -25,24 +22,20 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 
-@WebServlet(name = "assignment4.matchesservlet.MatchesServlet", value = "/matches")
-public class MatchesServlet extends AbstractGetServlet {
+@WebServlet(name = "assignment4.statsservlet.StatsServlet", value = "/stats")
+public class StatsServlet extends AbstractGetServlet {
   private MongoClient mongoClient;
-  private final static Class<? extends List> listDocClazz = new ArrayList<Document>().getClass();
-  private final static int MAX_MATCH_SIZE = 100;
-
   private JedisPool jedisPool;
-  private final static int REDIS_KEY_EXPIRATION_SECONDS = 60; // 60 seconds
+  private final static int REDIS_KEY_EXPIRATION_SECONDS = 60; // 60 second
 
   @Override
   public void init() throws ServletException {
     super.init();
-
-    MongoClientSettings settings = MongoConnectionInfo.buildMongoSettings("Matches");
+    MongoClientSettings settings = MongoConnectionInfo.buildMongoSettings("Stats");
     try {
       this.mongoClient = MongoClients.create(settings);
     } catch (MongoException me) {
-      System.err.println("Cannot create MongoClient for MatchesServlet: " + me);
+      System.err.println("Cannot create MongoClient for StatsServlet: " + me);
     }
 
     JedisPoolConfig poolConfig = new JedisPoolConfig();
@@ -60,6 +53,7 @@ public class MatchesServlet extends AbstractGetServlet {
     super.destroy();
   }
 
+
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
@@ -73,26 +67,25 @@ public class MatchesServlet extends AbstractGetServlet {
       return;
     }
 
-    // fetch data from redis to check if there's a record based on cache key value
-    String redisKey = "matches:" + swiperId;
+    String redisKey = "stats:" + swiperId;
     try (Jedis jedis = jedisPool.getResource()) {
-      String cachedMatches = jedis.get(redisKey);
-      if (cachedMatches != null) {
+      String statsJson = jedis.get(redisKey);
+      if (statsJson != null) {
         response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().print(cachedMatches);
+        response.getWriter().print(statsJson);
         response.getWriter().flush();
-        System.out.println("MatchesServlet Respond to Client: Fetched from cache for: " + swiperId);
+        System.out.println("StatsServlet Respond to Client (from cache): Fetched for:" + swiperId);
       } else {
         // Connect to MongoDB
         MongoDatabase database = this.mongoClient.getDatabase(MongoConnectionInfo.DATABASE);
-        MongoCollection<Document> matchesCollection = database.getCollection(MongoConnectionInfo.MATCH_COLLECTION);
-        this.readMatchesCollection(matchesCollection, swiperId, gson, responseMsg, response, redisKey, jedis);
+        MongoCollection<Document> statsCollection = database.getCollection(MongoConnectionInfo.STATS_COLLECTION);
+        this.readStatsCollection(statsCollection, swiperId, gson, responseMsg, response, jedis, redisKey);
       }
     }
   }
 
-  private void readMatchesCollection(MongoCollection<Document> collection, Integer swiperId,
-      Gson gson, ResponseMsg responseMsg, HttpServletResponse response, String redisKey, Jedis jedis)
+  private void readStatsCollection(MongoCollection<Document> collection, Integer swiperId, Gson gson,
+      ResponseMsg responseMsg, HttpServletResponse response, Jedis jedis, String redisKey)
       throws IOException {
     Document doc = collection.find(eq("_id", swiperId)).first();
 
@@ -103,23 +96,19 @@ public class MatchesServlet extends AbstractGetServlet {
       response.getOutputStream().flush();
       System.out.println("MatchesServlet Respond to Client: User Not Found:" + swiperId);
     } else {
-      List<Integer> matchesList = doc.get("matches", listDocClazz);
-      if (matchesList.size() > MAX_MATCH_SIZE) {
-        matchesList = matchesList.subList(0, MAX_MATCH_SIZE);
-      }
-      // Convert List<Integer> to List<String>
-      Matches matches = new Matches(matchesList.stream().map(id -> String.valueOf(id)).collect(
-          Collectors.toList()));
-      String matchesJson = gson.toJson(matches);
-      responseMsg.setMessage("Fetched Matches for userId " + swiperId + "!");
-      response.setStatus(HttpServletResponse.SC_OK);
-      response.getWriter().print(matchesJson);
-      response.getWriter().flush();
-      System.out.println("MatchesServlet Respond to Client: Fetched for:" + swiperId);
+      int likes = doc.getInteger("likes");
+      int dislikes = doc.getInteger("dislikes");
+      MatchStats stats = new MatchStats().numLikes(likes).numDislikes(dislikes);
+      String statsJson = gson.toJson(stats);
 
-      // Cache the matches in Redis
-      jedis.setex(redisKey, REDIS_KEY_EXPIRATION_SECONDS, matchesJson);
+      // Cache the stats in Redis
+      jedis.setex(redisKey, REDIS_KEY_EXPIRATION_SECONDS, statsJson);
+
+      responseMsg.setMessage("Fetched Stats for userId " + swiperId + "!");
+      response.setStatus(HttpServletResponse.SC_OK);
+      response.getWriter().print(statsJson);
+      response.getWriter().flush();
+      System.out.println("StatsServlet Respond to Client: Fetched for:" + swiperId);
     }
   }
 }
-
