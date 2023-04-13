@@ -117,6 +117,7 @@ public class ConsumerThread implements Runnable, ConsumerRebalanceListener {
         lastCommitTime = currentTimeMillis;
       }
     } catch (Exception e) {
+      System.err.println("Failed to commit offsets! " + e);
       this.log.error("Failed to commit offsets!", e);
     }
   }
@@ -152,6 +153,7 @@ public class ConsumerThread implements Runnable, ConsumerRebalanceListener {
     try {
       this.consumer.commitSync(revokedPartitionOffsets);
     } catch (Exception e) {
+      System.err.println("Failed to commit offsets for revoked partitions!");
       this.log.warn("Failed to commit offsets for revoked partitions!");
     }
   }
