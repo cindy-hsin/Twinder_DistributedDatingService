@@ -8,7 +8,14 @@ public class LoadTestConfig {
   public static final int MATCHES_SERVLET_DB_MAX_CONNECTION = 80;
   public static final int STATS_SERVLET_DB_MAX_CONNECTION = 80;
 
+
+
+  // Consumer
   public static final int BATCH_UPDATE_SIZE = 60;   // Consumer.
+  public static final int CONSUMER_PROCESS_THREAD = 2;
+
+
+
 
   // CONSUMER_THREAD_NUM * BATCH_UPDATE_SIZE must be divisble by 500K,
   // so that all msgs can be batch updated and ACK to RMQ??
