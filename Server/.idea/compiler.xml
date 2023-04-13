@@ -6,7 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="Consumer" />
+        <module name="MatchesConsumer" />
         <module name="StatsServlet" />
         <module name="Config" />
         <module name="MatchesServlet" />

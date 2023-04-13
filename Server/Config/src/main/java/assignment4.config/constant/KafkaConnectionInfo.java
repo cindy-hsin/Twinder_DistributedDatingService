@@ -1,5 +1,6 @@
 package assignment4.config.constant;
-
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 public class KafkaConnectionInfo {
   // three Kafka brokers private ip, no need to update every time
 //  public static final String BROKER_1_IP = "172.31.28.39";
@@ -16,6 +17,10 @@ public class KafkaConnectionInfo {
   public static final String MATCHES_CONSUMER_GROUP_ID = "matches-consumer";
 
   public static final String STATS_CONSUMER_GROUP_ID = "stats-consumer";
+
+  public static final Duration CONSUMER_POLL_TIMEOUT = Duration.of(100, ChronoUnit.MILLIS);
+
+  public static final int CONSUMER_COMMIT_INTERVAL = 5000; // Unit: ms
 
 
 }

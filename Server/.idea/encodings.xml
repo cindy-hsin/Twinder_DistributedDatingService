@@ -3,6 +3,8 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/Config/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Config/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Consumer/MatchesConsumer/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Consumer/MatchesConsumer/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Consumer/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Consumer/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/GetServlet/src/main/java" charset="UTF-8" />

@@ -10,6 +10,10 @@
   </parent>
 
   <artifactId>Consumer</artifactId>
+  <packaging>pom</packaging>
+  <modules>
+    <module>MatchesConsumer</module>
+  </modules>
 
   <properties>
     <maven.compiler.source>11</maven.compiler.source>
