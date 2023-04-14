@@ -61,14 +61,14 @@ public abstract class ProcessTask implements Runnable {
     for (ConsumerRecord<String, String> record : records) {
       if (this.stopped)
         break;      // Ensure that as soon as this task is stopped by ConsumerThread, it will complete the completionFuture with the current offset.
-      // TODO: Write to DB (process record here and make sure you catch all exceptions);
-      //  If any exception is thrown, complete the completion with exception?? log?
+      // process record here and make sure you catch all exceptions
 
       // The multi-threaded solution here allows us to take as much time as needed to process a record,
       // so we can simply retry processing in a loop until it succeeds.
       curRecord = record;
       // Accumulate 60 messages,then batch write & set offset.
       this.putToBatchMap(record);
+      // batchUpdateToDB will keep trying bulkWrite until succeed
       reachBatchSize = this.batchUpdateToDB(false);  // not force
 
       if (reachBatchSize) {
@@ -119,14 +119,15 @@ public abstract class ProcessTask implements Runnable {
     return this.finished;
   }
 
+
+  protected abstract void putToBatchMap(ConsumerRecord<String, String> record);
+
   /**
    * If the current batch size reaches the BATCH_UPDATE_SIZE, do batch update and return true;
    * Otherwise, do nothing and return false
    */
   protected abstract boolean batchUpdateToDB(boolean force);
 
-
-  protected abstract void putToBatchMap(ConsumerRecord<String, String> record);
 
   protected abstract void resetBatchMap();
 

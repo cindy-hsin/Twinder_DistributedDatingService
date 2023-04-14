@@ -45,7 +45,7 @@ public abstract class ConsumerThread implements Runnable, ConsumerRebalanceListe
 
 
   public ConsumerThread(String topic, String groupId) {
-    // Connect to Kafka Broker
+    // Set up Kafka Consumer, Connect to Kafka Broker
     Properties config = new Properties();
     config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConnectionInfo.KAFKA_BROKERS_IP);
     // config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class); -> We don't specify key for partition.
@@ -56,7 +56,7 @@ public abstract class ConsumerThread implements Runnable, ConsumerRebalanceListe
     this.consumer = new KafkaConsumer<>(config);
     this.topic = topic;
 
-    // Connect to MongoDB
+    // Set up MongoClient
     ConnectionString mongoUri = new ConnectionString(MongoConnectionInfo.uri);
     MongoClientSettings settings = MongoClientSettings.builder()
         .applyConnectionString(mongoUri)
