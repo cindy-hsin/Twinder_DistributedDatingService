@@ -6,7 +6,8 @@ import java.util.concurrent.TimeUnit;
 public class MongoConnectionInfo {
   public static final String USER_NAME = "";
   public static final String PASSWORD = "";
-  public static final String HOST_NAME = "34.220.225.59"; // TODO: please remember to change this ip to mongos private ip
+  public static final String HOST_NAME = "34.220.225.59";
+  // TODO: please remember to change this ip to mongos private ip
 
   public static final String PORT = "27017";
 

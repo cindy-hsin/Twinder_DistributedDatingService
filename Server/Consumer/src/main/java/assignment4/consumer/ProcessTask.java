@@ -1,5 +1,10 @@
 package assignment4.consumer;
 
+import static assignment4.config.constant.LoadTestConfig.BATCH_UPDATE_SIZE;
+
+import assignment4.config.datamodel.SwipeDetails;
+import com.google.gson.Gson;
+import com.mongodb.client.MongoClient;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +15,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class ProcessTask implements Runnable {
+public abstract class ProcessTask implements Runnable {
   private final List<ConsumerRecord<String, String>> records;
 
   // volatile: visible to other threads (i.e. ConsumerThread),
@@ -29,8 +34,13 @@ public class ProcessTask implements Runnable {
   private final AtomicLong currentOffset = new AtomicLong();
 
   private Logger log = LoggerFactory.getLogger(ProcessTask.class);
-  public ProcessTask(List<ConsumerRecord<String, String>> records) {
+
+  private MongoClient mongoClient;
+
+
+  public ProcessTask(List<ConsumerRecord<String, String>> records, MongoClient mongoClient) {
     this.records = records;
+    this.mongoClient = mongoClient;
   }
 
   @Override
@@ -45,6 +55,9 @@ public class ProcessTask implements Runnable {
     this.started = true;
     this.startStopLock.unlock();
 
+    boolean reachBatchSize = true;
+    ConsumerRecord<String, String> curRecord = null;
+
     for (ConsumerRecord<String, String> record : records) {
       if (this.stopped)
         break;      // Ensure that as soon as this task is stopped by ConsumerThread, it will complete the completionFuture with the current offset.
@@ -53,10 +66,25 @@ public class ProcessTask implements Runnable {
 
       // The multi-threaded solution here allows us to take as much time as needed to process a record,
       // so we can simply retry processing in a loop until it succeeds.
+      curRecord = record;
+      // Accumulate 60 messages,then batch write & set offset.
+      this.putToBatchMap(record);
+      reachBatchSize = this.batchUpdateToDB(false);  // not force
 
-
-          this.currentOffset.set(record.offset() + 1);    // Set the currentOffset to the last processed record's offset.
+      if (reachBatchSize) {
+        this.resetBatchMap();
+        this.currentOffset.set(record.offset() + 1);    // Set the currentOffset to the last processed record's offset.
+      }
+      // If hasn't reach the batch size, then no writes to DB, and no commit offset set for Kafka broker.
     }
+
+    // if the last batch is not accumulated to 60, do another FORCE write & set offset.
+    if (!reachBatchSize) {
+      this.batchUpdateToDB(true);
+      this.resetBatchMap();
+      this.currentOffset.set(curRecord.offset() + 1);
+    }
+
     this.finished = true;
     this.completionFuture.complete(this.currentOffset.get());
 
@@ -90,4 +118,18 @@ public class ProcessTask implements Runnable {
   public boolean isFinished() {
     return this.finished;
   }
+
+  /**
+   * If the current batch size reaches the BATCH_UPDATE_SIZE, do batch update and return true;
+   * Otherwise, do nothing and return false
+   */
+  protected abstract boolean batchUpdateToDB(boolean force);
+
+
+  protected abstract void putToBatchMap(ConsumerRecord<String, String> record);
+
+  protected abstract void resetBatchMap();
+
+
+
 }

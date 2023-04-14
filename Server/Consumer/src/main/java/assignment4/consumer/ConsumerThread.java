@@ -3,6 +3,13 @@ package assignment4.consumer;
 import assignment4.config.constant.KafkaConnectionInfo;
 import assignment4.config.constant.LoadTestConfig;
 
+import assignment4.config.constant.MongoConnectionInfo;
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.MongoException;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
@@ -11,13 +18,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
-public class ConsumerThread implements Runnable, ConsumerRebalanceListener {
+
+
+
+public abstract class ConsumerThread implements Runnable, ConsumerRebalanceListener {
   private final KafkaConsumer<String, String> consumer;
   private final ExecutorService executor = Executors.newFixedThreadPool(LoadTestConfig.CONSUMER_PROCESS_THREAD);
   private final Map<TopicPartition, ProcessTask> activeTasks = new HashMap<>();
@@ -26,10 +37,15 @@ public class ConsumerThread implements Runnable, ConsumerRebalanceListener {
   private long lastCommitTime = System.currentTimeMillis();
   private final Logger log = LoggerFactory.getLogger(ConsumerThread.class);
 
+  private MongoClient mongoClient;
+
   private final String topic;
 
 
+
+
   public ConsumerThread(String topic, String groupId) {
+    // Connect to Kafka Broker
     Properties config = new Properties();
     config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConnectionInfo.KAFKA_BROKERS_IP);
     // config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class); -> We don't specify key for partition.
@@ -39,6 +55,26 @@ public class ConsumerThread implements Runnable, ConsumerRebalanceListener {
     config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
     this.consumer = new KafkaConsumer<>(config);
     this.topic = topic;
+
+    // Connect to MongoDB
+    ConnectionString mongoUri = new ConnectionString(MongoConnectionInfo.uri);
+    MongoClientSettings settings = MongoClientSettings.builder()
+        .applyConnectionString(mongoUri)
+        .applyToConnectionPoolSettings(builder ->
+            builder
+                .maxConnectionIdleTime(60, TimeUnit.SECONDS)
+                .maxSize(LoadTestConfig.CONSUMER_DB_MAX_CONNECTION)
+                .maxWaitTime(10, TimeUnit.SECONDS))
+        .build();
+
+    try {
+      this.mongoClient = MongoClients.create(settings);
+      System.out.println("Connected to MongoDB!");
+    } catch (MongoException me) {
+      System.out.println("Failed to create mongoClient: " + me);
+    }
+
+
   }
 
 
@@ -48,10 +84,10 @@ public class ConsumerThread implements Runnable, ConsumerRebalanceListener {
       this.consumer.subscribe(Collections.singleton(this.topic), this);    // subscribe to the topic
       while (!this.stopped.get()) {
         ConsumerRecords<String, String> records = this.consumer.poll(
-            KafkaConnectionInfo.CONSUMER_POLL_TIMEOUT);  // poll timeout
-        handleFetchedRecords(records);
-        checkActiveTasks();
-        commitOffsets();
+            KafkaConnectionInfo.CONSUMER_POLL_TIMEOUT);  // poll timeout V.S. max.poll.interval.ms default value: 5 minutes
+        this.handleFetchedRecords(records);
+        this.checkActiveTasks();
+        this.commitOffsets();
       }
     } catch (WakeupException we) {
       if (!this.stopped.get())    // if this.stopped is false, meaning the Consumer is not intentionally stopped (by calling stopConsuming()). ->Some errors have happened and forced Consumer to wake up.
@@ -67,12 +103,13 @@ public class ConsumerThread implements Runnable, ConsumerRebalanceListener {
    * and Pause polling from those partitions to ensure process order within each partition.
    * @param fetchedRecords
    */
-  private void handleFetchedRecords(ConsumerRecords<String, String> fetchedRecords) {
+  protected void handleFetchedRecords(ConsumerRecords<String, String> fetchedRecords) {
     if (fetchedRecords.count() > 0) {
       List<TopicPartition> partitionsToPause = new ArrayList<>();
       fetchedRecords.partitions().forEach(partition -> {
         List<ConsumerRecord<String, String>> partitionRecords = fetchedRecords.records(partition);
-        ProcessTask task= new ProcessTask(partitionRecords);
+
+        ProcessTask task= this.createProcessTask(partitionRecords, this.mongoClient);
         partitionsToPause.add(partition);
         this.executor.submit(task);
         this.activeTasks.put(partition, task);
@@ -82,6 +119,8 @@ public class ConsumerThread implements Runnable, ConsumerRebalanceListener {
 
   }
 
+
+  protected abstract ProcessTask createProcessTask(List<ConsumerRecord<String, String>> partitionRecords,MongoClient mongoClient);
 
   /**
    * Check if each active ProcessTask (of a partition) has finished.
