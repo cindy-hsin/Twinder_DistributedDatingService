@@ -6,8 +6,7 @@ import java.util.concurrent.TimeUnit;
 public class MongoConnectionInfo {
   public static final String USER_NAME = "";
   public static final String PASSWORD = "";
-  public static final String HOST_NAME = "34.220.225.59";
-  // TODO: please remember to change this ip to mongos private ip
+  public static final String HOST_NAME = "172.31.21.114";
 
   public static final String PORT = "27017";
 
@@ -26,7 +25,7 @@ public class MongoConnectionInfo {
        HOST_NAME + ":" + PORT;
 
 
-  public static MongoClientSettings buildMongoSettings(String servletClassName) {
+  public static MongoClientSettings buildMongoSettingsForGet(String servletClassName) {
     MongoClientSettings settings = MongoClientSettings.builder()
         .applyConnectionString(new ConnectionString(MongoConnectionInfo.uri))
         .applyToConnectionPoolSettings(builder ->
@@ -40,5 +39,22 @@ public class MongoConnectionInfo {
 
     return settings;
   }
+
+  public static MongoClientSettings buildMongoSettingsForConsumer() {
+    MongoClientSettings settings = MongoClientSettings.builder()
+        .applyConnectionString(new ConnectionString(MongoConnectionInfo.uri))
+        .applyToConnectionPoolSettings(builder ->
+            builder
+                .maxConnectionIdleTime(60, TimeUnit.SECONDS)
+                .maxSize(LoadTestConfig.CONSUMER_DB_MAX_CONNECTION)
+                .maxWaitTime(10, TimeUnit.SECONDS))
+        .build();
+
+    return settings;
+  }
+
+
+
+
 
 }

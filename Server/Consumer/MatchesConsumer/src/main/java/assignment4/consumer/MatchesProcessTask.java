@@ -1,14 +1,18 @@
 package assignment4.consumer;
 
-import static assignment4.config.constant.LoadTestConfig.BATCH_UPDATE_SIZE;
+import static assignment4.config.constant.LoadTestConfig.CONSUMER_BATCH_UPDATE_SIZE;
 
+import assignment4.config.constant.LoadTestConfig;
 import assignment4.config.constant.MongoConnectionInfo;
 import assignment4.config.datamodel.SwipeDetails;
 import com.google.gson.Gson;
+import com.mongodb.ReadConcern;
+import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoClient;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.BulkWriteOptions;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.model.UpdateOptions;
@@ -23,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -40,6 +43,8 @@ public class MatchesProcessTask extends ProcessTask{
     // Connect to MongoDB
     MongoDatabase database = mongoClient.getDatabase(MongoConnectionInfo.DATABASE);
     this.matchesCollection = database.getCollection(MongoConnectionInfo.MATCH_COLLECTION);
+    this.matchesCollection.withWriteConcern(new WriteConcern(LoadTestConfig.CONSUMER_DB_WRITE_CONCERN,LoadTestConfig.CONSUMER_DB_WRITE_TIMEOUT)).withReadConcern(new ReadConcern(
+        LoadTestConfig.CONSUMER_DB_READ_CONCERN_LEVEL));
   }
 
 
@@ -62,7 +67,7 @@ public class MatchesProcessTask extends ProcessTask{
 
   @Override
   protected boolean batchUpdateToDB(boolean force) {
-    if (this.batch_cnt[0] < BATCH_UPDATE_SIZE && !force) {
+    if (this.batch_cnt[0] < CONSUMER_BATCH_UPDATE_SIZE && !force) {
       return false;
     }
     // Update DB Matches Collection

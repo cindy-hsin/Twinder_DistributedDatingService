@@ -6,8 +6,8 @@ public class KafkaConnectionInfo {
 //  public static final String BROKER_1_IP = "172.31.28.39";
 //  public static final String BROKER_2_IP = "172.31.31.63";
 
-  private static final String KAFKA_BROKER1_IP = "172.31.28.39";
-  private static final String KAFKA_BROKER2_IP = "172.31.31.63";
+  private static final String KAFKA_BROKER1_IP = "172.31.21.127";
+  private static final String KAFKA_BROKER2_IP = "172.31.23.50";
 
   public static final String KAFKA_BROKERS_IP = KAFKA_BROKER1_IP + KAFKA_BROKER2_IP;
 
@@ -18,9 +18,7 @@ public class KafkaConnectionInfo {
 
   public static final String STATS_CONSUMER_GROUP_ID = "stats-consumer";
 
-  public static final Duration CONSUMER_POLL_TIMEOUT = Duration.of(100, ChronoUnit.MILLIS);
 
-  public static final int CONSUMER_COMMIT_INTERVAL = 5000; // Unit: ms
 
 
 }

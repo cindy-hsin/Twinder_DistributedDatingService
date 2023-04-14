@@ -2,6 +2,7 @@ package assignment4.statsservlet;
 
 import static com.mongodb.client.model.Filters.eq;
 import assignment4.config.constant.MongoConnectionInfo;
+import assignment4.config.constant.RedisConnectionInfo;
 import assignment4.config.datamodel.MatchStats;
 import assignment4.config.datamodel.ResponseMsg;
 import com.google.gson.Gson;
@@ -31,7 +32,7 @@ public class StatsServlet extends AbstractGetServlet {
   @Override
   public void init() throws ServletException {
     super.init();
-    MongoClientSettings settings = MongoConnectionInfo.buildMongoSettings("Stats");
+    MongoClientSettings settings = MongoConnectionInfo.buildMongoSettingsForGet("Stats");
     try {
       this.mongoClient = MongoClients.create(settings);
     } catch (MongoException me) {
@@ -39,9 +40,9 @@ public class StatsServlet extends AbstractGetServlet {
     }
 
     JedisPoolConfig poolConfig = new JedisPoolConfig();
-    poolConfig.setMaxTotal(200);
-    poolConfig.setMaxIdle(100);
-    jedisPool = new JedisPool(poolConfig, "52.24.41.38"); // TODO: replace redis private ec2 ip
+    poolConfig.setMaxTotal(RedisConnectionInfo.POOL_MAX_TOTAL_CONN);
+    poolConfig.setMaxIdle(RedisConnectionInfo.POOL_MAX_IDLE_CONN);
+    jedisPool = new JedisPool(poolConfig, RedisConnectionInfo.REDIS_URI);
   }
 
   @Override

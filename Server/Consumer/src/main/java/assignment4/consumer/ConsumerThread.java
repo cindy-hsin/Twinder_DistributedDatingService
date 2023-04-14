@@ -42,8 +42,6 @@ public abstract class ConsumerThread implements Runnable, ConsumerRebalanceListe
   private final String topic;
 
 
-
-
   public ConsumerThread(String topic, String groupId) {
     // Set up Kafka Consumer, Connect to Kafka Broker
     Properties config = new Properties();
@@ -57,15 +55,8 @@ public abstract class ConsumerThread implements Runnable, ConsumerRebalanceListe
     this.topic = topic;
 
     // Set up MongoClient
-    ConnectionString mongoUri = new ConnectionString(MongoConnectionInfo.uri);
-    MongoClientSettings settings = MongoClientSettings.builder()
-        .applyConnectionString(mongoUri)
-        .applyToConnectionPoolSettings(builder ->
-            builder
-                .maxConnectionIdleTime(60, TimeUnit.SECONDS)
-                .maxSize(LoadTestConfig.CONSUMER_DB_MAX_CONNECTION)
-                .maxWaitTime(10, TimeUnit.SECONDS))
-        .build();
+
+    MongoClientSettings settings = MongoConnectionInfo.buildMongoSettingsForConsumer();
 
     try {
       this.mongoClient = MongoClients.create(settings);
@@ -84,7 +75,7 @@ public abstract class ConsumerThread implements Runnable, ConsumerRebalanceListe
       this.consumer.subscribe(Collections.singleton(this.topic), this);    // subscribe to the topic
       while (!this.stopped.get()) {
         ConsumerRecords<String, String> records = this.consumer.poll(
-            KafkaConnectionInfo.CONSUMER_POLL_TIMEOUT);  // poll timeout V.S. max.poll.interval.ms default value: 5 minutes
+            LoadTestConfig.CONSUMER_POLL_TIMEOUT);  // poll timeout V.S. max.poll.interval.ms default value: 5 minutes
         this.handleFetchedRecords(records);
         this.checkActiveTasks();
         this.commitOffsets();
@@ -148,7 +139,7 @@ public abstract class ConsumerThread implements Runnable, ConsumerRebalanceListe
   private void commitOffsets() {
     try {
       long currentTimeMillis = System.currentTimeMillis();
-      if (currentTimeMillis - lastCommitTime > KafkaConnectionInfo.CONSUMER_COMMIT_INTERVAL) {
+      if (currentTimeMillis - lastCommitTime > LoadTestConfig.CONSUMER_COMMIT_INTERVAL) {
         if(!this.offsetsToCommit.isEmpty()) {
           this.consumer.commitSync(this.offsetsToCommit);   // Synchronously commit. Ensure commit offsets only after records are processed
           this.offsetsToCommit.clear();

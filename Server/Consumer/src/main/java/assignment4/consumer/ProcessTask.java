@@ -1,9 +1,5 @@
 package assignment4.consumer;
 
-import static assignment4.config.constant.LoadTestConfig.BATCH_UPDATE_SIZE;
-
-import assignment4.config.datamodel.SwipeDetails;
-import com.google.gson.Gson;
 import com.mongodb.client.MongoClient;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
@@ -123,7 +119,7 @@ public abstract class ProcessTask implements Runnable {
   protected abstract void putToBatchMap(ConsumerRecord<String, String> record);
 
   /**
-   * If the current batch size reaches the BATCH_UPDATE_SIZE, do batch update and return true;
+   * If the current batch size reaches the CONSUMER_BATCH_UPDATE_SIZE, do batch update and return true;
    * Otherwise, do nothing and return false
    */
   protected abstract boolean batchUpdateToDB(boolean force);

@@ -1,11 +1,14 @@
 package assignment4.consumer;
 
-import static assignment4.config.constant.LoadTestConfig.BATCH_UPDATE_SIZE;
+import static assignment4.config.constant.LoadTestConfig.CONSUMER_BATCH_UPDATE_SIZE;
 
+import assignment4.config.constant.LoadTestConfig;
 import assignment4.config.constant.MongoConnectionInfo;
 import assignment4.config.datamodel.SwipeDetails;
 import com.google.gson.Gson;
 import com.mongodb.MongoException;
+import com.mongodb.ReadConcern;
+import com.mongodb.WriteConcern;
 import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -35,6 +38,8 @@ public class StatsProcessTask extends ProcessTask {
     // Connect to MongoDB
     MongoDatabase database = mongoClient.getDatabase(MongoConnectionInfo.DATABASE);
     this.statsCollection = database.getCollection(MongoConnectionInfo.STATS_COLLECTION);
+    this.statsCollection.withWriteConcern(new WriteConcern(LoadTestConfig.CONSUMER_DB_WRITE_CONCERN,LoadTestConfig.CONSUMER_DB_WRITE_TIMEOUT)).withReadConcern(new ReadConcern(
+        LoadTestConfig.CONSUMER_DB_READ_CONCERN_LEVEL));
   }
 
   @Override
@@ -60,7 +65,7 @@ public class StatsProcessTask extends ProcessTask {
 
   @Override
   protected boolean batchUpdateToDB(boolean force) {
-    if (this.batch_cnt[0] < BATCH_UPDATE_SIZE && !force) {
+    if (this.batch_cnt[0] < CONSUMER_BATCH_UPDATE_SIZE && !force) {
       return false;
     }
 
