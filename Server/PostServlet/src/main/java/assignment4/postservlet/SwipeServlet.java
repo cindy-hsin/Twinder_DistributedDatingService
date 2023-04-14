@@ -1,6 +1,8 @@
 package assignment4.postservlet;
 
 
+import assignment4.config.constant.KafkaConnectionInfo;
+
 import assignment4.config.datamodel.ResponseMsg;
 import assignment4.config.util.Pair;
 import assignment4.config.datamodel.SwipeDetails;
@@ -137,10 +139,10 @@ public class SwipeServlet extends HttpServlet {
     String message = gson.toJson(swipeDetails);
 
     try {
-      ProducerRecord<String, String> matchesRecord = new ProducerRecord<>("matchesTopic", message);
+      ProducerRecord<String, String> matchesRecord = new ProducerRecord<>(KafkaConnectionInfo.MATCHES_TOPIC, message);
       producer.send(matchesRecord);
 
-      ProducerRecord<String, String> statsRecord = new ProducerRecord<>("statsTopic", message);
+      ProducerRecord<String, String> statsRecord = new ProducerRecord<>(KafkaConnectionInfo.STATS_TOPIC, message);
       producer.send(statsRecord);
 
       return true;

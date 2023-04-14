@@ -1,7 +1,10 @@
 package assignment4.matchesservlet;
 
 import static com.mongodb.client.model.Filters.eq;
+
+import assignment4.config.constant.LoadTestConfig;
 import assignment4.config.constant.MongoConnectionInfo;
+import assignment4.config.constant.RedisConnectionInfo;
 import assignment4.config.datamodel.Matches;
 import assignment4.config.datamodel.ResponseMsg;
 import com.google.gson.Gson;
@@ -32,13 +35,13 @@ public class MatchesServlet extends AbstractGetServlet {
   private final static int MAX_MATCH_SIZE = 100;
 
   private JedisPool jedisPool;
-  private final static int REDIS_KEY_EXPIRATION_SECONDS = 60; // 60 seconds
+
 
   @Override
   public void init() throws ServletException {
     super.init();
 
-    MongoClientSettings settings = MongoConnectionInfo.buildMongoSettings("Matches");
+    MongoClientSettings settings = MongoConnectionInfo.buildMongoSettingsForGet("Matches");
     try {
       this.mongoClient = MongoClients.create(settings);
     } catch (MongoException me) {
@@ -46,9 +49,9 @@ public class MatchesServlet extends AbstractGetServlet {
     }
 
     JedisPoolConfig poolConfig = new JedisPoolConfig();
-    poolConfig.setMaxTotal(200);
-    poolConfig.setMaxIdle(100);
-    jedisPool = new JedisPool(poolConfig, "52.24.41.38"); // TODO: replace redis private ec2 ip
+    poolConfig.setMaxTotal(RedisConnectionInfo.POOL_MAX_TOTAL_CONN);
+    poolConfig.setMaxIdle(RedisConnectionInfo.POOL_MAX_IDLE_CONN);
+    jedisPool = new JedisPool(poolConfig, RedisConnectionInfo.REDIS_URI);
   }
 
   @Override
@@ -118,7 +121,7 @@ public class MatchesServlet extends AbstractGetServlet {
       System.out.println("MatchesServlet Respond to Client: Fetched for:" + swiperId);
 
       // Cache the matches in Redis
-      jedis.setex(redisKey, REDIS_KEY_EXPIRATION_SECONDS, matchesJson);
+      jedis.setex(redisKey, LoadTestConfig.REDIS_KEY_EXPIRATION_SECONDS, matchesJson);
     }
   }
 }
