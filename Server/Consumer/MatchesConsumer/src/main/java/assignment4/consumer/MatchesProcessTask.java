@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.TopicPartition;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -36,9 +37,9 @@ public class MatchesProcessTask extends ProcessTask{
   private final int[] batch_cnt = {0};
   private MongoCollection<Document> matchesCollection;
 
-  public MatchesProcessTask(
+  public MatchesProcessTask(TopicPartition partition,
       List<ConsumerRecord<String, String>> partitionRecords, MongoClient mongoClient) {
-    super(partitionRecords, mongoClient);
+    super(partition, partitionRecords, mongoClient);
 
     // Connect to MongoDB
     MongoDatabase database = mongoClient.getDatabase(MongoConnectionInfo.DATABASE);
@@ -59,7 +60,7 @@ public class MatchesProcessTask extends ProcessTask{
       this.matchesMap.putIfAbsent(swiperId, new HashSet<>());
       this.matchesMap.get(swiperId).add(swipeeId);
     }
-    System.out.println( "MatchesProcessTask thread Name = " + Thread.currentThread().getName() + " Received '" + "swiperId: "+ swiperId + " swipeeId: " + swipeeId);
+    System.out.println( "MatchesProcessTask thread Name = " + Thread.currentThread().getName() + " has put " + "swiperId: "+ swiperId + " swipeeId: " + swipeeId + "to local map");
     this.batch_cnt[0] ++;
 
   }
@@ -72,7 +73,7 @@ public class MatchesProcessTask extends ProcessTask{
     }
     // Update DB Matches Collection
     List bulkOps = new ArrayList<>();
-    System.out.println("Matches map size:" + this.matchesMap.size());
+    //System.out.println("Matches map size:" + this.matchesMap.size());
 
     // Edge case: if none of the swipe directions is right(<--> like <--> match).
     // then there is no match at all.

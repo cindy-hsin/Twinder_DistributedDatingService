@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 public class MongoConnectionInfo {
   public static final String USER_NAME = "";
   public static final String PASSWORD = "";
-  public static final String HOST_NAME = "35.87.80.78"; // "172.31.21.114";
+  public static final String HOST_NAME = "54.201.128.57"; // "172.31.21.114";
 
   public static final String PORT = "27017";
 

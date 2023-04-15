@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import com.mongodb.client.MongoClient;
+import org.apache.kafka.common.TopicPartition;
 
 public class MatchesConsumerThread extends ConsumerThread{
 
@@ -13,9 +14,9 @@ public class MatchesConsumerThread extends ConsumerThread{
   }
 
 @Override
-  protected ProcessTask createProcessTask(
+  protected ProcessTask createProcessTask(TopicPartition partition,
       List<ConsumerRecord<String, String>> partitionRecords, MongoClient mongoClient) {
-    return new MatchesProcessTask(partitionRecords, mongoClient);
+    return new MatchesProcessTask(partition, partitionRecords, mongoClient);
 }
 
   public static void main(String[] args) {

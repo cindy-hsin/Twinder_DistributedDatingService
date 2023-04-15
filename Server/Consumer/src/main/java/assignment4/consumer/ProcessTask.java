@@ -2,6 +2,7 @@ package assignment4.consumer;
 
 import com.mongodb.client.MongoClient;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +14,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class ProcessTask implements Runnable {
   private final List<ConsumerRecord<String, String>> records;
+  private final TopicPartition partition;
 
   // volatile: visible to other threads (i.e. ConsumerThread),
   // but doesn't need to be atomic.(because these variables will only be modified
@@ -34,8 +36,10 @@ public abstract class ProcessTask implements Runnable {
   private MongoClient mongoClient;
 
 
-  public ProcessTask(List<ConsumerRecord<String, String>> records, MongoClient mongoClient) {
+  public ProcessTask(TopicPartition partition, List<ConsumerRecord<String, String>> records,
+       MongoClient mongoClient) {
     this.records = records;
+    this.partition = partition;
     this.mongoClient = mongoClient;
   }
 
@@ -44,6 +48,9 @@ public abstract class ProcessTask implements Runnable {
     // A ProcessTask might be stopped after the thread starts to run
     // but before it starts processing records.
     // In this case, directly exit this method, leaving currentOffset() to be the initial value: 0
+
+    System.out.println("ProcessTask: " + this + " starts process partition: " + partition + " :" + records.size() + ""
+        + "in Thread: " + Thread.currentThread().getName());
     this.startStopLock.lock();
     if (this.stopped){
       return;
@@ -53,8 +60,12 @@ public abstract class ProcessTask implements Runnable {
 
     boolean reachBatchSize = true;
     ConsumerRecord<String, String> curRecord = null;
+    System.out.println("ProcessTask: " + this + " starts looping partition: " + partition + " :" + records.size() + ""
+        + "in Thread: " + Thread.currentThread().getName());
 
+    int record_cnt = 0;
     for (ConsumerRecord<String, String> record : records) {
+      record_cnt ++;
       if (this.stopped)
         break;      // Ensure that as soon as this task is stopped by ConsumerThread, it will complete the completionFuture with the current offset.
       // process record here and make sure you catch all exceptions
@@ -64,12 +75,14 @@ public abstract class ProcessTask implements Runnable {
       curRecord = record;
       // Accumulate 60 messages,then batch write & set offset.
       this.putToBatchMap(record);
+      System.out.println("ProcessTask: " + this + "has put message No." + record_cnt + "to map in Thread:" + Thread.currentThread().getName());
       // batchUpdateToDB will keep trying bulkWrite until succeed
       reachBatchSize = this.batchUpdateToDB(false);  // not force
 
       if (reachBatchSize) {
         this.resetBatchMap();
         this.currentOffset.set(record.offset() + 1);    // Set the currentOffset to the last processed record's offset.
+        System.out.println("ProcessTask: " + this + "finished setting offset for current batch.");
       }
       // If hasn't reach the batch size, then no writes to DB, and no commit offset set for Kafka broker.
     }
@@ -79,11 +92,12 @@ public abstract class ProcessTask implements Runnable {
       this.batchUpdateToDB(true);
       this.resetBatchMap();
       this.currentOffset.set(curRecord.offset() + 1);
+      System.out.println("ProcessTask: " + this + "finished setting offset for LAST REMAINING batch.");
     }
 
     this.finished = true;
     this.completionFuture.complete(this.currentOffset.get());
-
+    System.out.println("ProcessTask: " + this + "FINISHED !!");
   }
 
   public long getCurrentOffset() {
