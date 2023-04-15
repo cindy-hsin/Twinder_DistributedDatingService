@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="PostServlet:war">
-    <output-path>$PROJECT_DIR$/out/artifacts/PostServlet_war</output-path>
-    <root id="archive" name="PostServlet_war.war">
-      <element id="artifact" artifact-name="PostServlet:war exploded" />
-    </root>
-  </artifact>
-</component>

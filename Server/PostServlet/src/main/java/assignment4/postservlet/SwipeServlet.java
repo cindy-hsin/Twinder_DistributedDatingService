@@ -6,6 +6,7 @@ import assignment4.config.constant.KafkaConnectionInfo;
 import assignment4.config.datamodel.ResponseMsg;
 import assignment4.config.util.Pair;
 import assignment4.config.datamodel.SwipeDetails;
+import java.util.concurrent.Future;
 import java.util.logging.Logger;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import com.google.gson.Gson;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 
 @WebServlet(name = "assignment4.postservlet.SwipeServlet", value = "/swipe")
 public class SwipeServlet extends HttpServlet {
@@ -78,10 +80,10 @@ public class SwipeServlet extends HttpServlet {
 
     // If request body is valid, send the Swipe data to RabbitMQ queue
     if (this.sendMessageToBroker(direction, reqBodyJsonStr, gson)) { //TODO: Check argument type: JsonObject?? String??
-      responseMsg.setMessage("Succeeded in sending message to RabbitMQ!");
+      responseMsg.setMessage("Succeeded in sending message to Kafka!");
       response.setStatus(HttpServletResponse.SC_CREATED);
     } else {
-      responseMsg.setMessage("Failed to send message to RabbitMQ");
+      responseMsg.setMessage("Failed to send message to Kafka");
       response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
     response.getOutputStream().print(gson.toJson(responseMsg));
@@ -140,14 +142,21 @@ public class SwipeServlet extends HttpServlet {
 
     try {
       ProducerRecord<String, String> matchesRecord = new ProducerRecord<>(KafkaConnectionInfo.MATCHES_TOPIC, message);
-      producer.send(matchesRecord);
+
+      RecordMetadata sendMatchesRes = producer.send(matchesRecord).get();
+      System.out.println("Matches send record metadata: " + sendMatchesRes.topic() +
+          sendMatchesRes.hasOffset() + sendMatchesRes.offset() + sendMatchesRes.hasTimestamp() + sendMatchesRes.timestamp());
+      System.out.println("Finished! PostServlet send to Kafka Matches topic: " + sendMatchesRes);
 
       ProducerRecord<String, String> statsRecord = new ProducerRecord<>(KafkaConnectionInfo.STATS_TOPIC, message);
-      producer.send(statsRecord);
+      RecordMetadata sendStatsRes = producer.send(statsRecord).get();
+      System.out.println("Finished! PostServlet send to Kafka Stats topic: "+ sendStatsRes);
+      System.out.println("Stats send record metadata: " + sendStatsRes.topic() +
+          sendStatsRes.hasOffset() + sendStatsRes.offset() + sendStatsRes.hasTimestamp() + sendStatsRes.timestamp());
 
       return true;
     } catch (Exception e) {
-      Logger.getLogger(SwipeServlet.class.getName()).info("Failed to send message to Kafka");
+      Logger.getLogger(SwipeServlet.class.getName()).info("Failed to send message to Kafka: " + e);
       return false;
     }
   }

@@ -14,15 +14,14 @@ public class LoadTestConfig {
   /**Consumer*/
   public static final int CONSUMER_BATCH_UPDATE_SIZE = 60;   // Consumer.
   public static final int CONSUMER_PROCESS_THREAD = 2;
-  public static final Duration CONSUMER_POLL_TIMEOUT = Duration.of(100, ChronoUnit.MILLIS);
+  public static final Duration CONSUMER_POLL_TIMEOUT = Duration.of(100000, ChronoUnit.MILLIS);
   public static final int CONSUMER_COMMIT_INTERVAL = 5000; // Unit: ms
 
   // Consumer DB BatchUpdate WriteConcern
   public static final int CONSUMER_DB_WRITE_CONCERN = 1; // W=R=1 or
   public static final int CONSUMER_DB_WRITE_TIMEOUT = 100;  // Unit: ms
 
-  public static final ReadConcernLevel CONSUMER_DB_READ_CONCERN_LEVEL = ReadConcernLevel.valueOf(
-      "majority");
+  public static final ReadConcernLevel CONSUMER_DB_READ_CONCERN_LEVEL = ReadConcernLevel.MAJORITY;
   // local, available, linearizable
   // Read Concern level: https://www.mongodb.com/docs/manual/reference/read-concern/
 
