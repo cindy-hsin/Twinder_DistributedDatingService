@@ -34,8 +34,9 @@ public class KafkaProducerFactory {
     // TODO: Please note we can increase the BATCH_SIZE_CONFIG,LINGER_MS_CONFIG AND BUFFER_MEMORY_CONFIG can increase throughput,
     // TODO: but may also effect latency, trade-off, we can adjust those values during performance test
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConnectionInfo.KAFKA_BROKERS_IP);
+    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-    props.put(ProducerConfig.ACKS_CONFIG, "1"); // TODO: this acks config could be changed on demands
+    props.put(ProducerConfig.ACKS_CONFIG, "all"); // TODO: this acks config could be changed on demands
 //    props.put(ProducerConfig.RETRIES_CONFIG, 1);
     props.put(ProducerConfig.BATCH_SIZE_CONFIG, LoadTestConfig.PRODUCER_BATCH_SIZE);
     props.put(ProducerConfig.LINGER_MS_CONFIG, LoadTestConfig.PRODUCER_LINGER_MS); //TODO: both linger_ms_config and batch_size_config work
