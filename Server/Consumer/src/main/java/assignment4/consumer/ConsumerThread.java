@@ -74,11 +74,17 @@ public abstract class ConsumerThread implements Runnable, ConsumerRebalanceListe
     try {
       this.consumer.subscribe(Collections.singleton(this.topic), this);    // subscribe to the topic
       while (!this.stopped.get()) {
+        System.out.println("===== Start Polling =====");
+        System.out.println("Check Paused Partition:" + consumer.paused());
         ConsumerRecords<String, String> records = this.consumer.poll(
             LoadTestConfig.CONSUMER_POLL_TIMEOUT);  // poll timeout V.S. max.poll.interval.ms default value: 5 minutes
+        System.out.println("Before handleFetchedRecords");
         this.handleFetchedRecords(records);
-        this.checkActiveTasks();
+        System.out.println("Before checkActiveTasks");
+        this.checkActiveTasks();   // check if any task is finished
+        System.out.println("Before commit offset!");
         this.commitOffsets();
+        System.out.println("Finished commit offset!");
       }
     } catch (WakeupException we) {
       if (!this.stopped.get())    // if this.stopped is false, meaning the Consumer is not intentionally stopped (by calling stopConsuming()). ->Some errors have happened and forced Consumer to wake up.
@@ -96,22 +102,27 @@ public abstract class ConsumerThread implements Runnable, ConsumerRebalanceListe
    */
   protected void handleFetchedRecords(ConsumerRecords<String, String> fetchedRecords) {
     if (fetchedRecords.count() > 0) {
+
       List<TopicPartition> partitionsToPause = new ArrayList<>();
       fetchedRecords.partitions().forEach(partition -> {
         List<ConsumerRecord<String, String>> partitionRecords = fetchedRecords.records(partition);
 
-        ProcessTask task= this.createProcessTask(partitionRecords, this.mongoClient);
+
+        ProcessTask task= this.createProcessTask(partition, partitionRecords, this.mongoClient);
+        System.out.println("HAVE POLLED FROM partition " + partition + " :" + partitionRecords.size() + " records. Created ProcessTask: " + task);
         partitionsToPause.add(partition);
         this.executor.submit(task);
         this.activeTasks.put(partition, task);
       });
+
       consumer.pause(partitionsToPause);   // Pause polling from the same partitions of the records, to Ensure process order within each partition.
+      System.out.println("Have Paused Consuming from partition: "+ partitionsToPause);
     }
 
   }
 
 
-  protected abstract ProcessTask createProcessTask(List<ConsumerRecord<String, String>> partitionRecords,MongoClient mongoClient);
+  protected abstract ProcessTask createProcessTask(TopicPartition partition, List<ConsumerRecord<String, String>> partitionRecords,MongoClient mongoClient);
 
   /**
    * Check if each active ProcessTask (of a partition) has finished.
@@ -123,14 +134,27 @@ public abstract class ConsumerThread implements Runnable, ConsumerRebalanceListe
   private void checkActiveTasks() {
     List<TopicPartition> finishedTasksPartitions = new ArrayList<>();
     this.activeTasks.forEach((partition, task) -> {
-      if (task.isFinished())
+      if (task.isFinished()) {
         finishedTasksPartitions.add(partition);
+        System.out.println("Task " + task + " for partition:" + partition + " is finished!");
+      } else {
+        System.out.println("Task" + task + " for partition:" + partition + " is NOT finished!!!!");
+      }
+
       long offset = task.getCurrentOffset();
-      if (offset > 0)
+      System.out.println("Task " + task +  " finished getting offset from task");
+      if (offset > 0) {
         this.offsetsToCommit.put(partition, new OffsetAndMetadata(offset));
+        System.out.println("Task " + task +  " offset has been put to global offsets");
+      } else {
+        System.out.println("Task " + task +  " offset <=0 !!!");
+      }
+
     });
     finishedTasksPartitions.forEach(partition -> this.activeTasks.remove(partition));
+    System.out.println("Removed finished partition from activeTasks:" + finishedTasksPartitions);
     this.consumer.resume(finishedTasksPartitions);
+    System.out.println("Resumed consuming from partition:" + finishedTasksPartitions);
   }
 
   /**
@@ -139,12 +163,21 @@ public abstract class ConsumerThread implements Runnable, ConsumerRebalanceListe
   private void commitOffsets() {
     try {
       long currentTimeMillis = System.currentTimeMillis();
+      System.out.println("Enter commitOffsets, current timestamp: " + currentTimeMillis);
+      System.out.println("Greater than commit interval? -> "+ (currentTimeMillis - lastCommitTime > LoadTestConfig.CONSUMER_COMMIT_INTERVAL));
       if (currentTimeMillis - lastCommitTime > LoadTestConfig.CONSUMER_COMMIT_INTERVAL) {
         if(!this.offsetsToCommit.isEmpty()) {
+          System.out.println("BEFORE COMMIT: offsetsToCommit: "+ this.offsetsToCommit.entrySet());
           this.consumer.commitSync(this.offsetsToCommit);   // Synchronously commit. Ensure commit offsets only after records are processed
+          System.out.println("FINISHED COMMIT! ");
           this.offsetsToCommit.clear();
+          System.out.println("Global offsets cleared!");
+        } else {
+          System.out.println("NO global offsets to commit!");
         }
         lastCommitTime = currentTimeMillis;
+      } else {
+        System.out.println("NOT REACH COMMIT INTERVAL! SKIP COMMIT!");
       }
     } catch (Exception e) {
       System.err.println("Failed to commit offsets! " + e);

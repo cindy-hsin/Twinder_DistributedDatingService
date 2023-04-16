@@ -4,6 +4,7 @@ import assignment4.config.constant.KafkaConnectionInfo;
 import com.mongodb.client.MongoClient;
 import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.TopicPartition;
 
 public class StatsConsumerThread extends ConsumerThread {
 
@@ -12,9 +13,9 @@ public class StatsConsumerThread extends ConsumerThread {
   }
 
   @Override
-  protected ProcessTask createProcessTask(List<ConsumerRecord<String, String>> partitionRecords,
+  protected ProcessTask createProcessTask(TopicPartition partition, List<ConsumerRecord<String, String>> partitionRecords,
       MongoClient mongoClient) {
-    return new StatsProcessTask(partitionRecords, mongoClient);
+    return new StatsProcessTask(partition, partitionRecords, mongoClient);
   }
 
   public static void main(String[] args) {

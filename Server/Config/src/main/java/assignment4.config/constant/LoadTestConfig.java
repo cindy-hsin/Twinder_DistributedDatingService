@@ -13,9 +13,9 @@ public class LoadTestConfig {
 
   /**Consumer*/
   public static final int CONSUMER_BATCH_UPDATE_SIZE = 60;   // Consumer.
-  public static final int CONSUMER_PROCESS_THREAD = 2;
-  public static final Duration CONSUMER_POLL_TIMEOUT = Duration.of(100000, ChronoUnit.MILLIS);
-  public static final int CONSUMER_COMMIT_INTERVAL = 5000; // Unit: ms
+  public static final int CONSUMER_PROCESS_THREAD = 10;
+  public static final Duration CONSUMER_POLL_TIMEOUT = Duration.of(100, ChronoUnit.MILLIS);
+  public static final int CONSUMER_COMMIT_INTERVAL = 5000; // Unit: ms  ref: https://www.confluent.io/blog/kafka-consumer-multi-threaded-messaging/?_ga=2.148183543.135057811.1681237840-316597465.1681237839#:~:text=Committing%20offsets%20on,to%20five%20seconds.
 
   // Consumer DB BatchUpdate WriteConcern
   public static final int CONSUMER_DB_WRITE_CONCERN = 1; // W=R=1 or

@@ -80,12 +80,12 @@ public class MatchesServlet extends AbstractGetServlet {
     String redisKey = "matches:" + swiperId;
     try (Jedis jedis = jedisPool.getResource()) {
       String cachedMatches = jedis.get(redisKey);
-      if (cachedMatches != null) {
+      if (cachedMatches != null) {  // cache hit
         response.setStatus(HttpServletResponse.SC_OK);
         response.getWriter().print(cachedMatches);
         response.getWriter().flush();
         System.out.println("MatchesServlet Respond to Client: Fetched from cache for: " + swiperId);
-      } else {
+      } else {    // cache miss
         // Connect to MongoDB
         MongoDatabase database = this.mongoClient.getDatabase(MongoConnectionInfo.DATABASE);
         MongoCollection<Document> matchesCollection = database.getCollection(MongoConnectionInfo.MATCH_COLLECTION);

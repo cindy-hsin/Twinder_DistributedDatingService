@@ -142,17 +142,16 @@ public class SwipeServlet extends HttpServlet {
 
     try {
       ProducerRecord<String, String> matchesRecord = new ProducerRecord<>(KafkaConnectionInfo.MATCHES_TOPIC, message);
-
       RecordMetadata sendMatchesRes = producer.send(matchesRecord).get();
+      System.out.println("Finished! PostServlet send to Kafka Matches topic: " + sendMatchesRes);
       System.out.println("Matches send record metadata: " + sendMatchesRes.topic() +
           sendMatchesRes.hasOffset() + sendMatchesRes.offset() + sendMatchesRes.hasTimestamp() + sendMatchesRes.timestamp());
-      System.out.println("Finished! PostServlet send to Kafka Matches topic: " + sendMatchesRes);
+
 
       ProducerRecord<String, String> statsRecord = new ProducerRecord<>(KafkaConnectionInfo.STATS_TOPIC, message);
       RecordMetadata sendStatsRes = producer.send(statsRecord).get();
       System.out.println("Finished! PostServlet send to Kafka Stats topic: "+ sendStatsRes);
-      System.out.println("Stats send record metadata: " + sendStatsRes.topic() +
-          sendStatsRes.hasOffset() + sendStatsRes.offset() + sendStatsRes.hasTimestamp() + sendStatsRes.timestamp());
+      System.out.println("Stats send record metadata: " + sendStatsRes.topic() + sendStatsRes.hasOffset() + sendStatsRes.offset() + sendStatsRes.hasTimestamp() + sendStatsRes.timestamp());
 
       return true;
     } catch (Exception e) {
