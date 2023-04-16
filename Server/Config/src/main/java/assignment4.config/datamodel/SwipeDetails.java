@@ -2,8 +2,8 @@ package assignment4.config.datamodel;
 
 public class SwipeDetails {
   private final static int MAX_COMMENT_LEN = 256;
-  public static final int MAX_SWIPER_ID = 50000;
-  public static final int MAX_SWIPEE_ID = 50000;
+  public static final int MAX_SWIPER_ID = 5000;
+  public static final int MAX_SWIPEE_ID = 5000;
 
   public final static String LEFT = "left";
   public final static String RIGHT = "right";

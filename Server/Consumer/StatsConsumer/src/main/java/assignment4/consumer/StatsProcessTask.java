@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.TopicPartition;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -31,9 +32,9 @@ public class StatsProcessTask extends ProcessTask {
   private final int[] batch_cnt = {0};
   private MongoCollection<Document> statsCollection;
 
-  public StatsProcessTask(List<ConsumerRecord<String, String>> partitionRecords,
+  public StatsProcessTask(TopicPartition partition,List<ConsumerRecord<String, String>> partitionRecords,
       MongoClient mongoClient) {
-    super(partitionRecords, mongoClient);
+    super(partition, partitionRecords, mongoClient);
 
     // Connect to MongoDB
     MongoDatabase database = mongoClient.getDatabase(MongoConnectionInfo.DATABASE);

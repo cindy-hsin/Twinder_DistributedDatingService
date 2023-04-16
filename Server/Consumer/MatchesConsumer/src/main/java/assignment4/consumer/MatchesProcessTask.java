@@ -102,6 +102,7 @@ public class MatchesProcessTask extends ProcessTask{
     }
     //System.out.println("maps size:" + matchesMap.size() + " " + statsMap.size());
 
+    System.out.println("Starts BULK WRITE to Mongo, Thread:" + Thread.currentThread().getName());
     // NOTE: Try until bulkWrite succeed!!
     while (true) {
       try {

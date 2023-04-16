@@ -15,7 +15,7 @@ public class StatsConsumerThread extends ConsumerThread {
   @Override
   protected ProcessTask createProcessTask(TopicPartition partition, List<ConsumerRecord<String, String>> partitionRecords,
       MongoClient mongoClient) {
-    return new StatsProcessTask(partitionRecords, mongoClient);
+    return new StatsProcessTask(partition, partitionRecords, mongoClient);
   }
 
   public static void main(String[] args) {

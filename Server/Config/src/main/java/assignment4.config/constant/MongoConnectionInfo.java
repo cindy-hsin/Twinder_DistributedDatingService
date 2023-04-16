@@ -45,9 +45,9 @@ public class MongoConnectionInfo {
         .applyConnectionString(new ConnectionString(MongoConnectionInfo.uri))
         .applyToConnectionPoolSettings(builder ->
             builder
-                .maxConnectionIdleTime(60, TimeUnit.SECONDS)
+               // .maxConnectionIdleTime(60, TimeUnit.SECONDS) // max idle time before connection closed
                 .maxSize(LoadTestConfig.CONSUMER_DB_MAX_CONNECTION)
-                .maxWaitTime(10, TimeUnit.SECONDS))
+                .maxWaitTime(10, TimeUnit.SECONDS))   // wait before an connection is available
         .build();
 
     return settings;
