@@ -80,6 +80,7 @@ public class MatchesServlet extends AbstractGetServlet {
     String redisKey = "matches:" + swiperId;
     try (Jedis jedis = jedisPool.getResource()) {
       String cachedMatches = jedis.get(redisKey);
+
       if (cachedMatches != null) {  // cache hit
         response.setStatus(HttpServletResponse.SC_OK);
         response.getWriter().print(cachedMatches);
@@ -88,8 +89,10 @@ public class MatchesServlet extends AbstractGetServlet {
       } else {    // cache miss
         // Connect to MongoDB
         MongoDatabase database = this.mongoClient.getDatabase(MongoConnectionInfo.DATABASE);
-        MongoCollection<Document> matchesCollection = database.getCollection(MongoConnectionInfo.MATCH_COLLECTION);
-        this.readMatchesCollection(matchesCollection, swiperId, gson, responseMsg, response, redisKey, jedis);
+        MongoCollection<Document> matchesCollection = database.getCollection(
+            MongoConnectionInfo.MATCH_COLLECTION);
+        this.readMatchesCollection(matchesCollection, swiperId, gson, responseMsg, response,
+            redisKey, jedis);
       }
     }
   }
@@ -122,6 +125,7 @@ public class MatchesServlet extends AbstractGetServlet {
 
       // Cache the matches in Redis
       jedis.setex(redisKey, LoadTestConfig.REDIS_KEY_EXPIRATION_SECONDS, matchesJson);
+
     }
   }
 }

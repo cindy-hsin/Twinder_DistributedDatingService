@@ -11,7 +11,7 @@
 
   <servlet-mapping>
     <servlet-name>assignment4.statsservlet.StatsServlet</servlet-name>
-    <url-pattern>/matches/*</url-pattern>
+    <url-pattern>/stats/*</url-pattern>
   </servlet-mapping>
 
 </web-app>
