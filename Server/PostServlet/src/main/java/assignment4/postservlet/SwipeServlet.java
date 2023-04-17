@@ -6,7 +6,6 @@ import assignment4.config.constant.KafkaConnectionInfo;
 import assignment4.config.datamodel.ResponseMsg;
 import assignment4.config.util.Pair;
 import assignment4.config.datamodel.SwipeDetails;
-import java.util.concurrent.Future;
 import java.util.logging.Logger;
 import javax.servlet.*;
 import javax.servlet.http.*;

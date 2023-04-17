@@ -3,7 +3,6 @@ package assignment4.consumer;
 import assignment4.config.constant.KafkaConnectionInfo;
 import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
 import com.mongodb.client.MongoClient;
 import org.apache.kafka.common.TopicPartition;
 

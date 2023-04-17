@@ -1,14 +1,13 @@
 package assignment4.config.constant;
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
+
 public class KafkaConnectionInfo {
   // three Kafka brokers private ip, no need to update every time
 //  public static final String BROKER_1_IP = "172.31.28.39";
 //  public static final String BROKER_2_IP = "172.31.31.63";
 
 
-  private static final String KAFKA_BROKER1_IP = "35.86.146.7:9092"; // "172.31.21.127:2181";
-  private static final String KAFKA_BROKER2_IP = "34.216.146.96:9092";// "172.31.23.50:2181";
+  private static final String KAFKA_BROKER1_IP = "172.31.21.127:9092"; // "172.31.21.127:9092";
+  private static final String KAFKA_BROKER2_IP = "172.31.23.50:9092";// "172.31.23.50:9092";
 
   public static final String KAFKA_BROKERS_IP = KAFKA_BROKER1_IP + "," + KAFKA_BROKER2_IP;
 

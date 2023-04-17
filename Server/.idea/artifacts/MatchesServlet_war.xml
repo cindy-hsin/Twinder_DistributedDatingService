@@ -3,6 +3,12 @@
     <output-path>$PROJECT_DIR$/out/artifacts/MatchesServlet_war</output-path>
     <root id="archive" name="MatchesServlet_war.war">
       <element id="artifact" artifact-name="MatchesServlet:war exploded" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: org.mongodb:mongo-java-driver:3.12.10" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-simple:1.7.36" />
+        </element>
+      </element>
     </root>
   </artifact>
 </component>

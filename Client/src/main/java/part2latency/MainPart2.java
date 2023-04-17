@@ -36,16 +36,16 @@ public class MainPart2 {
 
 
     // Start POST threads
-//    final AtomicInteger numTakenReqs = new AtomicInteger(0);
-//    for (int i = 0; i < LoadTestConfig.NUM_THREADS; i++) {
-//      Runnable thread = new PostThread(postLatch, numSuccessfulPostReqs, numFailedPostReqs, numTakenReqs, postRecordsBuffer);
-//      new Thread(thread).start();
-//    }
+    final AtomicInteger numTakenReqs = new AtomicInteger(0);
+    for (int i = 0; i < LoadTestConfig.NUM_THREADS; i++) {
+      Runnable thread = new PostThread(postLatch, numSuccessfulPostReqs, numFailedPostReqs, numTakenReqs, postRecordsBuffer);
+      new Thread(thread).start();
+    }
 
     System.out.println(" ========= Start! GET thread =========");
     CountDownLatch getLatch = new CountDownLatch(128);
      //Start the GET thread
-    for (int i = 0; i < 128; i++) {
+    for (int i = 0; i < 256; i++) {
       new Thread(
           new GetThread(postLatch, numSuccessfulGetReqs, numFailedGetReqs, getRecords, getLatch)).start();
     }
@@ -53,21 +53,21 @@ public class MainPart2 {
     getLatch.await();
 
     // Update Metrics for POST records
-//    int numRecordListsTaken = 0;
-//    while (numRecordListsTaken < LoadTestConfig.NUM_THREADS || endPostTime == null) {
-//      if (postRecordsBuffer.size() > 0) {
-//        // take from buffer
-//        List<Record> threadRecords = postRecordsBuffer.take(); // Might throw InterruptedException
-//        numRecordListsTaken ++;
-//        // Iterate through each record: Update, max, min, sum; increment count to time group (starting at which second)
-//        postMetrics.updateRunningMetrics(threadRecords);
-//        // writeAllRecords(threadRecords);
-//        // inMemoryAllRecords.addAll(threadRecords); // FOR TESTING PURPOSE
-//      } else if  (postLatch.getCount() == 0) {
-//        // Mark endTime
-//        endPostTime = System.currentTimeMillis();
-//      }
-//    }
+    int numRecordListsTaken = 0;
+    while (numRecordListsTaken < LoadTestConfig.NUM_THREADS || endPostTime == null) {
+      if (postRecordsBuffer.size() > 0) {
+        // take from buffer
+        List<Record> threadRecords = postRecordsBuffer.take(); // Might throw InterruptedException
+        numRecordListsTaken ++;
+        // Iterate through each record: Update, max, min, sum; increment count to time group (starting at which second)
+        postMetrics.updateRunningMetrics(threadRecords);
+        // writeAllRecords(threadRecords);
+        // inMemoryAllRecords.addAll(threadRecords); // FOR TESTING PURPOSE
+      } else if  (postLatch.getCount() == 0) {
+        // Mark endTime
+        endPostTime = System.currentTimeMillis();
+      }
+    }
     endPostTime = System.currentTimeMillis();
     // Update Metrics for GET records
     getMetrics.updateRunningMetrics(getRecords);
@@ -87,20 +87,20 @@ public class MainPart2 {
 
 
     float wallTime = (endPostTime - startPostTime)/1000f;
-//    System.out.println("====== POST requests results ======");
-//    System.out.println("Successful Requests:" + numSuccessfulPostReqs);
-//    System.out.println("Unsuccessful Requests:" + numFailedPostReqs);
-//    System.out.println("Number of Threads: " + LoadTestConfig.NUM_THREADS);
-//    System.out.println("Multi-thread wall time:" + wallTime + "s");
-//    System.out.println("Throughput: " + numSuccessfulPostReqs.get() / wallTime + " req/s");
-//    System.out.println("\n");
+    System.out.println("====== POST requests results ======");
+    System.out.println("Successful Requests:" + numSuccessfulPostReqs);
+    System.out.println("Unsuccessful Requests:" + numFailedPostReqs);
+    System.out.println("Number of Threads: " + LoadTestConfig.NUM_THREADS);
+    System.out.println("Multi-thread wall time:" + wallTime + "s");
+    System.out.println("Throughput: " + numSuccessfulPostReqs.get() / wallTime + " req/s");
+    System.out.println("\n");
 //
-//    System.out.println("Mean Response Time (ms): " + (float)postMetrics.getSumLatency() / postMetrics.getNumTotalRecord());
-//    // System.out.println("Median Response Time (ms): " + postMetrics.calPercentileLatency(50));
-//    System.out.println("Throughput (req/s): " + (float)(numSuccessfulPostReqs.get()) / (endPostTime - startPostTime) * 1000);
-//    // System.out.println("99th Percentile Response Time: " + postMetrics.calPercentileLatency(99));
-//    System.out.println("Min Response Time (ms): " + postMetrics.getMinLatency());
-//    System.out.println("Max Response Time (ms): " + postMetrics.getMaxLatency());
+    System.out.println("Mean Response Time (ms): " + (float)postMetrics.getSumLatency() / postMetrics.getNumTotalRecord());
+    // System.out.println("Median Response Time (ms): " + postMetrics.calPercentileLatency(50));
+    System.out.println("Throughput (req/s): " + (float)(numSuccessfulPostReqs.get()) / (endPostTime - startPostTime) * 1000);
+    // System.out.println("99th Percentile Response Time: " + postMetrics.calPercentileLatency(99));
+    System.out.println("Min Response Time (ms): " + postMetrics.getMinLatency());
+    System.out.println("Max Response Time (ms): " + postMetrics.getMaxLatency());
 
     System.out.println("\n\n====== GET requests results ======");
     System.out.println("Successful Requests:" + numSuccessfulGetReqs);

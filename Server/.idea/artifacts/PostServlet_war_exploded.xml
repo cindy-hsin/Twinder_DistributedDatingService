@@ -8,14 +8,14 @@
           <element id="module-output" name="Config" />
         </element>
         <element id="directory" name="lib">
-          <element id="library" level="project" name="Maven: org.mongodb:mongo-java-driver:3.12.10" />
-          <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.32" />
-          <element id="library" level="project" name="Maven: org.slf4j:slf4j-simple:1.7.32" />
+          <element id="library" level="project" name="Maven: com.github.luben:zstd-jni:1.4.9-1" />
           <element id="library" level="project" name="Maven: com.google.code.gson:gson:2.8.9" />
           <element id="library" level="project" name="Maven: org.apache.commons:commons-pool2:2.9.0" />
           <element id="library" level="project" name="Maven: org.apache.kafka:kafka-clients:2.8.2" />
-          <element id="library" level="project" name="Maven: com.github.luben:zstd-jni:1.4.9-1" />
           <element id="library" level="project" name="Maven: org.lz4:lz4-java:1.7.1" />
+          <element id="library" level="project" name="Maven: org.mongodb:mongo-java-driver:3.12.10" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.32" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-simple:1.7.32" />
           <element id="library" level="project" name="Maven: org.xerial.snappy:snappy-java:1.1.8.1" />
         </element>
       </element>
