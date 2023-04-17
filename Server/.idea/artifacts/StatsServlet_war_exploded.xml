@@ -14,6 +14,7 @@
           <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.36" />
           <element id="library" level="project" name="Maven: org.apache.commons:commons-pool2:2.11.1" />
           <element id="library" level="project" name="Maven: org.json:json:20220320" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-simple:1.7.36" />
         </element>
       </element>
       <element id="javaee-facet-resources" facet="StatsServlet/web/Web" />
