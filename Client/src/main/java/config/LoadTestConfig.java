@@ -20,8 +20,8 @@ public class LoadTestConfig {
   // local: http://localhost:8080/A1-SpringBootServer_war
 
 
-  public static final String SWIPE_URL = "http://18.237.71.129:8080/PostServlet_war"; //"http://34.212.214.202:8080/PostServlet_war"; //
-  public static final String GET_URL = "http://35.166.33.193:8080/MatchesServlet_war"; // "http://localhost:8080/StatsServlet_war_exploded"; // "http://35.91.149.233:8080/GetServlet_war"; // "http://localhost:8080/GetServlet_war_exploded";
+  public static final String SWIPE_URL = "http://52.38.96.225:8080/PostServlet_war"; //"http://34.212.214.202:8080/PostServlet_war"; //
+//  public static final String GET_URL = "http://35.92.36.236:8080/MatchesServlet_war"; // "http://localhost:8080/StatsServlet_war_exploded"; // "http://35.91.149.233:8080/GetServlet_war"; // "http://localhost:8080/GetServlet_war_exploded";
 
 }
 //34.208.113.22

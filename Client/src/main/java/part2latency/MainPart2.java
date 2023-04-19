@@ -42,15 +42,15 @@ public class MainPart2 {
       new Thread(thread).start();
     }
 
-    System.out.println(" ========= Start! GET thread =========");
-    CountDownLatch getLatch = new CountDownLatch(128);
-     //Start the GET thread
-    for (int i = 0; i < 256; i++) {
-      new Thread(
-          new GetThread(postLatch, numSuccessfulGetReqs, numFailedGetReqs, getRecords, getLatch)).start();
-    }
-
-    getLatch.await();
+//    System.out.println(" ========= Start! GET thread =========");
+//    CountDownLatch getLatch = new CountDownLatch(128);
+//     //Start the GET thread
+//    for (int i = 0; i < 256; i++) {
+//      new Thread(
+//          new GetThread(postLatch, numSuccessfulGetReqs, numFailedGetReqs, getRecords, getLatch)).start();
+//    }
+//
+//    getLatch.await();
 
     // Update Metrics for POST records
     int numRecordListsTaken = 0;
@@ -102,14 +102,14 @@ public class MainPart2 {
     System.out.println("Min Response Time (ms): " + postMetrics.getMinLatency());
     System.out.println("Max Response Time (ms): " + postMetrics.getMaxLatency());
 
-    System.out.println("\n\n====== GET requests results ======");
-    System.out.println("Successful Requests:" + numSuccessfulGetReqs);
-    System.out.println("Unsuccessful Requests:" + numFailedGetReqs);
-    System.out.println("Mean Response Time (ms): " + (float)getMetrics.getSumLatency() / getMetrics.getNumTotalRecord());
-    System.out.println("Min Response Time (ms): " + getMetrics.getMinLatency());
-    System.out.println("Max Response Time (ms): " + getMetrics.getMaxLatency());
-    // For A4 test:
-    System.out.println("Throughput: " + numSuccessfulGetReqs.get() / wallTime + " req/s");
+//    System.out.println("\n\n====== GET requests results ======");
+//    System.out.println("Successful Requests:" + numSuccessfulGetReqs);
+//    System.out.println("Unsuccessful Requests:" + numFailedGetReqs);
+//    System.out.println("Mean Response Time (ms): " + (float)getMetrics.getSumLatency() / getMetrics.getNumTotalRecord());
+//    System.out.println("Min Response Time (ms): " + getMetrics.getMinLatency());
+//    System.out.println("Max Response Time (ms): " + getMetrics.getMaxLatency());
+//    // For A4 test:
+//    System.out.println("Throughput: " + numSuccessfulGetReqs.get() / wallTime + " req/s");
 
     // TEST:
     // testCalcStatistics(inMemoryAllRecords);

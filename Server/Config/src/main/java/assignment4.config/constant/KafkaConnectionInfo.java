@@ -18,7 +18,4 @@ public class KafkaConnectionInfo {
 
   public static final String STATS_CONSUMER_GROUP_ID = "stats-consumer";
 
-
-
-
 }
