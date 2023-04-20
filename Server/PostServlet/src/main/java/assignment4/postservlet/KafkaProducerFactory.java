@@ -10,7 +10,8 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 public class KafkaProducerFactory {
   private static KafkaProducerFactory instance;
-  private static Producer<String, String> producer;
+  private static Producer<String, String>
+      producer;
 
 
   private KafkaProducerFactory() {

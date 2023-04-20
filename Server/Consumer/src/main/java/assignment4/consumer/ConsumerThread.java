@@ -4,12 +4,10 @@ import assignment4.config.constant.KafkaConnectionInfo;
 import assignment4.config.constant.LoadTestConfig;
 
 import assignment4.config.constant.MongoConnectionInfo;
-import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
