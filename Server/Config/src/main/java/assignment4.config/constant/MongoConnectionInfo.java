@@ -9,7 +9,6 @@ public class MongoConnectionInfo {
 
   public static final String HOST_NAME = "34.215.237.125"; // "172.31.21.114";
 
-
   public static final String PORT = "27017";
 
   public static final String DATABASE = "twinder";

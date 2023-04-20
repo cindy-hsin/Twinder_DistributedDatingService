@@ -9,7 +9,6 @@ public class KafkaConnectionInfo {
   private static final String KAFKA_BROKER2_IP = "34.210.226.218:9092";// "172.31.23.50:2181";
 
 
-
   public static final String KAFKA_BROKERS_IP = KAFKA_BROKER1_IP + "," + KAFKA_BROKER2_IP;
 
   public static final String MATCHES_TOPIC = "matchesTopic";
