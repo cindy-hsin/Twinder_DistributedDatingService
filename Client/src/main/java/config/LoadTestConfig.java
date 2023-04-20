@@ -1,7 +1,7 @@
 package config;
 
 public class LoadTestConfig {
-  public static final int NUM_TOTAL_REQUESTS = 200000;
+  public static final int NUM_TOTAL_REQUESTS = 500000;
   public static final int NUM_THREADS = 200;    // Change this value for experiment
 
   public static final int POST_SUCCESS_CODE = 201;
@@ -20,9 +20,9 @@ public class LoadTestConfig {
   // local: http://localhost:8080/A1-SpringBootServer_war
 
 
-  public static final String SWIPE_URL = "http://localhost:8080/PostServlet_war_exploded"; //"http://34.212.214.202:8080/PostServlet_war"; //
-  public static final String GET_URL = "http://localhost:8080/MatchesServlet_war_exploded"; // "http://localhost:8080/StatsServlet_war_exploded"; // "http://35.91.149.233:8080/GetServlet_war"; // "http://localhost:8080/GetServlet_war_exploded";
-
+  public static final String SWIPE_URL = "http://52.38.96.225:8080/PostServlet_war"; //"http://localhost:8080/PostServlet_war_exploded";
+  public static final String GET_MATCHES_URL = "http://35.92.36.236:8080/MatchesServlet_war"; //"http://localhost:8080/MatchesServlet_war_exploded"; // "http://localhost:8080/StatsServlet_war_exploded"; // "http://35.91.149.233:8080/GetServlet_war"; // "http://localhost:8080/GetServlet_war_exploded";
+public static final String GET_STATS_URL = "http://35.92.36.236:8080/StatsServlet_war";
 
 }
 //34.208.113.22

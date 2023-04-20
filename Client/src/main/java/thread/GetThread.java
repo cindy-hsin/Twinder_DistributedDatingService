@@ -9,6 +9,7 @@ import io.swagger.client.api.StatsApi;
 import io.swagger.client.model.MatchStats;
 import io.swagger.client.model.Matches;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,59 +17,59 @@ import part2latency.Record;
 import part2latency.RequestType;
 
 
-public class GetThread extends AbsSendRequestThread {
+public abstract class GetThread extends AbsSendRequestThread {
   private static final int NUM_REQ_BATCH = 5;  // Required Constant! Not a tuning parameter
   private static final int GAP_TIME_MS = 1000; // Required Constant! Not a tuning parameter
   private static final int MIN_ID = 1;
   private static final int MAX_USER_ID = 5000;
 
-  private final List<Record> records;
+  protected final BlockingQueue<List<Record>> recordsBuffer;
 
   // for A4 test:
-  private final CountDownLatch getLatch;
+  protected final CountDownLatch getLatch;
 
 
-  public GetThread(CountDownLatch latch, AtomicInteger numSuccessfulReqs, AtomicInteger numFailedReqs, List<Record> getRecords, CountDownLatch getLatch) {
-    super(numSuccessfulReqs, numFailedReqs, latch);
-     this.records = getRecords;
+  public GetThread(AtomicInteger numSuccessfulReqs, AtomicInteger numFailedReqs, BlockingQueue<List<Record>> recordsBuffer, CountDownLatch getLatch) {
+    super(numSuccessfulReqs, numFailedReqs, getLatch);
+     this.recordsBuffer = recordsBuffer;
      this.getLatch = getLatch;
   }
 
-  @Override
-  public void run() {
-    MatchesApi matchesApi = new MatchesApi(new ApiClient());
-    matchesApi.getApiClient().setBasePath(LoadTestConfig.GET_URL);
+//  @Override
+//  public void run() {
+//    MatchesApi matchesApi = new MatchesApi(new ApiClient());
+//    matchesApi.getApiClient().setBasePath(LoadTestConfig.GET_URL);
+//
+//    StatsApi statsApi = new StatsApi(new ApiClient());
+//    statsApi.getApiClient().setBasePath(LoadTestConfig.GET_URL);
+//    System.out.println("Set base path");
+//
+//    // Keep sending GET reqs until all PostThreads terminate. -> this.latch(which is the postLatch in Main)'s count == 0
+//    int apiType = 1;    // TODO: Switch between Matches and Stats requests
+//
+//    int i = 0;
+//    while (i < 1000){//this.latch.getCount() > 0) {
+////      Long batchStartTime = System.currentTimeMillis();
+////      System.out.println("GET batchStartTime: " + batchStartTime);
+////      for (int j = 0; j < NUM_REQ_BATCH; j++) {
+//        Record record = this.sendSingleRequest(matchesApi, statsApi, apiType);
+//        this.records.add(record);
+////        apiType *= -1;
+////      }
+////      Long batchEndTime = System.currentTimeMillis();
+//
+////      try {
+////        Thread.sleep(GAP_TIME_MS - (batchStartTime - batchEndTime));
+////      } catch (InterruptedException e) {
+////        throw new RuntimeException(e);
+////      }
+//      i ++;
+//    }
+//
+//    this.getLatch.countDown();
+//  }
 
-    StatsApi statsApi = new StatsApi(new ApiClient());
-    statsApi.getApiClient().setBasePath(LoadTestConfig.GET_URL);
-    System.out.println("Set base path");
-
-    // Keep sending GET reqs until all PostThreads terminate. -> this.latch(which is the postLatch in Main)'s count == 0
-    int apiType = 1;    // TODO: Switch between Matches and Stats requests
-
-    int i = 0;
-    while (i < 1000){//this.latch.getCount() > 0) {
-//      Long batchStartTime = System.currentTimeMillis();
-//      System.out.println("GET batchStartTime: " + batchStartTime);
-//      for (int j = 0; j < NUM_REQ_BATCH; j++) {
-        Record record = this.sendSingleRequest(matchesApi, statsApi, apiType);
-        this.records.add(record);
-//        apiType *= -1;
-//      }
-//      Long batchEndTime = System.currentTimeMillis();
-
-//      try {
-//        Thread.sleep(GAP_TIME_MS - (batchStartTime - batchEndTime));
-//      } catch (InterruptedException e) {
-//        throw new RuntimeException(e);
-//      }
-      i ++;
-    }
-
-    this.getLatch.countDown();
-  }
-
-  private Record sendSingleRequest(MatchesApi matchesApi, StatsApi statsApi, int apiType) {
+  protected Record sendSingleRequest(MatchesApi matchesApi, StatsApi statsApi, int apiType) {
     int retry = LoadTestConfig.MAX_RETRY;
     String userId = String.valueOf(ThreadLocalRandom.current().nextInt(MIN_ID, MAX_USER_ID+1));
 
