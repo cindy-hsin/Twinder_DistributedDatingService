@@ -39,15 +39,15 @@ public class StatsServlet extends AbstractGetServlet {
       System.err.println("Cannot create MongoClient for StatsServlet: " + me);
     }
 
-//    JedisPoolConfig poolConfig = new JedisPoolConfig();
-//    poolConfig.setMaxTotal(RedisConnectionInfo.POOL_MAX_TOTAL_CONN);
-//    poolConfig.setMaxIdle(RedisConnectionInfo.POOL_MAX_IDLE_CONN);
-//    jedisPool = new JedisPool(poolConfig, RedisConnectionInfo.REDIS_URI);
+    JedisPoolConfig poolConfig = new JedisPoolConfig();
+    poolConfig.setMaxTotal(RedisConnectionInfo.POOL_MAX_TOTAL_CONN);
+    poolConfig.setMaxIdle(RedisConnectionInfo.POOL_MAX_IDLE_CONN);
+    jedisPool = new JedisPool(poolConfig, RedisConnectionInfo.REDIS_URI);
   }
 
   @Override
   public void destroy() {
-//    jedisPool.close(); // release any resources associated with the pool
+    jedisPool.close(); // release any resources associated with the pool
     if (mongoClient != null) {
       mongoClient.close();
     }
@@ -69,21 +69,21 @@ public class StatsServlet extends AbstractGetServlet {
     }
 
     String redisKey = "stats:" + swiperId;
-//    try (Jedis jedis = jedisPool.getResource()) {
-//      String statsJson = jedis.get(redisKey);
-//      if (statsJson != null) {
-//        response.setStatus(HttpServletResponse.SC_OK);
-//        response.getWriter().print(statsJson);
-//        response.getWriter().flush();
-//        System.out.println("StatsServlet Respond to Client (from cache): Fetched for:" + swiperId);
-//      } else {
+    try (Jedis jedis = jedisPool.getResource()) {
+      String statsJson = jedis.get(redisKey);
+      if (statsJson != null) {
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().print(statsJson);
+        response.getWriter().flush();
+        System.out.println("StatsServlet Respond to Client (from cache): Fetched for:" + swiperId);
+      } else {
         // Connect to MongoDB
         MongoDatabase database = this.mongoClient.getDatabase(MongoConnectionInfo.DATABASE);
         MongoCollection<Document> statsCollection = database.getCollection(MongoConnectionInfo.STATS_COLLECTION);
         this.readStatsCollection(statsCollection, swiperId, gson, responseMsg, response, null, redisKey);
       }
-//    }
-//  }
+    }
+  }
 
   private void readStatsCollection(MongoCollection<Document> collection, Integer swiperId, Gson gson,
       ResponseMsg responseMsg, HttpServletResponse response, Jedis jedis, String redisKey)
@@ -103,7 +103,7 @@ public class StatsServlet extends AbstractGetServlet {
       String statsJson = gson.toJson(stats);
 
       // Cache the stats in Redis
-//      jedis.setex(redisKey, REDIS_KEY_EXPIRATION_SECONDS, statsJson);
+      jedis.setex(redisKey, REDIS_KEY_EXPIRATION_SECONDS, statsJson);
 
       responseMsg.setMessage("Fetched Stats for userId " + swiperId + "!");
       response.setStatus(HttpServletResponse.SC_OK);

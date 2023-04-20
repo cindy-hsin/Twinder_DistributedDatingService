@@ -7,7 +7,7 @@ public class MongoConnectionInfo {
   public static final String USER_NAME = "";
   public static final String PASSWORD = "";
 
-  public static final String HOST_NAME = "35.91.82.159"; // "172.31.21.114";
+  public static final String HOST_NAME = "34.215.237.125"; // "172.31.21.114";
 
   public static final String PORT = "27017";
 
