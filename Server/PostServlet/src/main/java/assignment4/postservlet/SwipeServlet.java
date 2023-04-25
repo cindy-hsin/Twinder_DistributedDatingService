@@ -12,6 +12,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import com.google.gson.Gson;
+import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -159,22 +160,83 @@ public class SwipeServlet extends HttpServlet {
     swipeDetails.setDirection(direction);
     String message = gson.toJson(swipeDetails);
 
+    // sync
+//    try {
+//      ProducerRecord<String, String> matchesRecord = new ProducerRecord<>(KafkaConnectionInfo.MATCHES_TOPIC, message);
+//      RecordMetadata sendMatchesRes = producer.send(matchesRecord).get();
+//      System.out.println("Finished! PostServlet send to Kafka Matches topic: " + sendMatchesRes);
+//      System.out.println("Matches send record metadata: " + sendMatchesRes.topic() +
+//          sendMatchesRes.hasOffset() + sendMatchesRes.offset() + sendMatchesRes.hasTimestamp() + sendMatchesRes.timestamp());
+//
+//
+//      ProducerRecord<String, String> statsRecord = new ProducerRecord<>(KafkaConnectionInfo.STATS_TOPIC, message);
+//      RecordMetadata sendStatsRes = producer.send(statsRecord).get();
+//      System.out.println("Finished! PostServlet send to Kafka Stats topic: "+ sendStatsRes);
+//      System.out.println("Stats send record metadata: " + sendStatsRes.topic() + sendStatsRes.hasOffset() + sendStatsRes.offset() + sendStatsRes.hasTimestamp() + sendStatsRes.timestamp());
+//
+//      return true;
+//    } catch (Exception e) {
+//      Logger.getLogger(SwipeServlet.class.getName()).info("Failed to send message to Kafka: " + e);
+//      return false;
+//    }
+
+    // async
+//    try {
+//      ProducerRecord<String, String> matchesRecord = new ProducerRecord<>(KafkaConnectionInfo.MATCHES_TOPIC, message);
+//      producer.send(matchesRecord, new Callback() {
+//        @Override
+//        public void onCompletion(RecordMetadata metadata, Exception exception) {
+//          if (exception == null) {
+//            System.out.println("Finished! PostServlet send to Kafka Matches topic: " + metadata);
+//            System.out.println("Matches send record metadata: " + metadata.topic() + metadata.hasOffset() + metadata.offset() + metadata.hasTimestamp() + metadata.timestamp());
+//          } else {
+//            Logger.getLogger(SwipeServlet.class.getName()).info("Failed to send message to Kafka Matches topic: " + exception);
+//          }
+//        }
+//      });
+//
+//      ProducerRecord<String, String> statsRecord = new ProducerRecord<>(KafkaConnectionInfo.STATS_TOPIC, message);
+//      producer.send(statsRecord, new Callback() {
+//        @Override
+//        public void onCompletion(RecordMetadata metadata, Exception exception) {
+//          if (exception == null) {
+//            System.out.println("Finished! PostServlet send to Kafka Stats topic: " + metadata);
+//            System.out.println("Stats send record metadata: " + metadata.topic() + metadata.hasOffset() + metadata.offset() + metadata.hasTimestamp() + metadata.timestamp());
+//          } else {
+//            Logger.getLogger(SwipeServlet.class.getName()).info("Failed to send message to Kafka Stats topic: " + exception);
+//          }
+//        }
+//      });
+//
+//      return true;
+//    } catch (Exception e) {
+//      Logger.getLogger(SwipeServlet.class.getName()).info("Failed to send message to Kafka: " + e);
+//      return false;
+//    }
+
     try {
 
 
       ProducerRecord<String, String> matchesRecord = new ProducerRecord<>(KafkaConnectionInfo.MATCHES_TOPIC, message);
 
-      RecordMetadata sendMatchesRes = producer.send(matchesRecord).get();
-      System.out.println("Finished! PostServlet send to Kafka Matches topic: " + sendMatchesRes);
-      System.out.println("Matches send record metadata: " + sendMatchesRes.topic() +
-          sendMatchesRes.hasOffset() + sendMatchesRes.offset() + sendMatchesRes.hasTimestamp() + sendMatchesRes.timestamp());
-
+      producer.send(matchesRecord, (metadata, exception) -> {
+        if (exception == null) {
+          System.out.println("Finished! PostServlet send to Kafka Matches topic: " + metadata);
+          System.out.println("Matches send record metadata: " + metadata.topic() + metadata.hasOffset() + metadata.offset() + metadata.hasTimestamp() + metadata.timestamp());
+        } else {
+          Logger.getLogger(SwipeServlet.class.getName()).info("Failed to send message to Kafka Matches topic: " + exception);
+        }
+      });
 
       ProducerRecord<String, String> statsRecord = new ProducerRecord<>(KafkaConnectionInfo.STATS_TOPIC, message);
-      RecordMetadata sendStatsRes = producer.send(statsRecord).get();
-
-      System.out.println("Finished! PostServlet send to Kafka Stats topic: "+ sendStatsRes);
-      System.out.println("Stats send record metadata: " + sendStatsRes.topic() + sendStatsRes.hasOffset() + sendStatsRes.offset() + sendStatsRes.hasTimestamp() + sendStatsRes.timestamp());
+      producer.send(statsRecord, (metadata, exception) -> {
+        if (exception == null) {
+          System.out.println("Finished! PostServlet send to Kafka Stats topic: " + metadata);
+          System.out.println("Stats send record metadata: " + metadata.topic() + metadata.hasOffset() + metadata.offset() + metadata.hasTimestamp() + metadata.timestamp());
+        } else {
+          Logger.getLogger(SwipeServlet.class.getName()).info("Failed to send message to Kafka Stats topic: " + exception);
+        }
+      });
 
 
       return true;
