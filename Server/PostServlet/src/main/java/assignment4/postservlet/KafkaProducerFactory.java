@@ -41,7 +41,7 @@ public class KafkaProducerFactory {
 //    props.put(ProducerConfig.RETRIES_CONFIG, 1);
     props.put(ProducerConfig.BATCH_SIZE_CONFIG, LoadTestConfig.PRODUCER_BATCH_SIZE);
     props.put(ProducerConfig.LINGER_MS_CONFIG, LoadTestConfig.PRODUCER_LINGER_MS); //TODO: both linger_ms_config and batch_size_config work
-    props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 33554432);
+    props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 33554432); //unit:byte
     props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, LoadTestConfig.PRODUCER_MAX_IN_FLIGHT); // batch post to kafka
 //    props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy"); // compress the size of msg to send the broker, increase throughput
     props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");

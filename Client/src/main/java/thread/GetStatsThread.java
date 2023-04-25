@@ -32,7 +32,7 @@ public class GetStatsThread extends GetThread {
     int i = 0;
     List<Record> records = new ArrayList<>();
 
-    while (i < 1000){
+    while (i < 1250){
       Record record = this.sendSingleRequest(null, statsApi, apiType);
       records.add(record);
     }

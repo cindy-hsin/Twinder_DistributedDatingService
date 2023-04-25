@@ -26,9 +26,9 @@ public class LoadTestConfig {
   // Read Concern level: https://www.mongodb.com/docs/manual/reference/read-concern/
 
   /**Producer*/
-  public static final int PRODUCER_BATCH_SIZE = 16384;    // unnit: byte, default 16384
+  public static final int PRODUCER_BATCH_SIZE = 3000; //3000; // 1638;//16384;    // unit: byte, default 16384
 
-  public static final int PRODUCER_LINGER_MS = 5; //unit:ms, default: 0
+  public static final int PRODUCER_LINGER_MS = 1; // 1; // 0;//5; //unit:ms, default: 0
   public static final int PRODUCER_MAX_IN_FLIGHT = 5; // default:5
 
 

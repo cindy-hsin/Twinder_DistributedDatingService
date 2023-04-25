@@ -27,12 +27,11 @@ public class MainPost {
     final AtomicInteger numFailedPostReqs = new AtomicInteger(0);
 
 
-
-    final AtomicInteger numSuccessfulGetStatsReqs = new AtomicInteger(0);
-    final AtomicInteger numFailedGetStatsReqs = new AtomicInteger(0);
+//    final AtomicInteger numSuccessfulGetStatsReqs = new AtomicInteger(0);
+//    final AtomicInteger numFailedGetStatsReqs = new AtomicInteger(0);
 
     BlockingQueue<List<Record>> postRecordsBuffer = new LinkedBlockingQueue<>(QUEUE_CAPACITY);
-    BlockingQueue<List<Record>> getStatsRecordBuffer = new LinkedBlockingQueue<>(128);
+//    BlockingQueue<List<Record>> getStatsRecordBuffer = new LinkedBlockingQueue<>(128);
 
 
     postStartPostTime = System.currentTimeMillis();

@@ -609,6 +609,7 @@ public class ApiClient {
      *   otherwise use all of them (joining into a string)
      *
      * @param accepts The accepts array to select from
+     * @param accepts The accepts array to select from
      * @return The Accept header to use. If the given array is empty,
      *   null will be returned (not to set the Accept header explicitly).
      */
@@ -906,6 +907,7 @@ public class ApiClient {
                     try {
                         response.body().close();
                     } catch (IOException e) {
+                        System.out.println("Response body close error.");
                         throw new ApiException(response.message(), e, response.code(), response.headers().toMultimap());
                     }
                 }
@@ -919,9 +921,11 @@ public class ApiClient {
                 try {
                     respBody = response.body().string();
                 } catch (IOException e) {
+                    System.out.println("response failed, body -> string fail.");
                     throw new ApiException(response.message(), e, response.code(), response.headers().toMultimap());
                 }
             }
+            System.out.println("response failed, no response body.");
             throw new ApiException(response.message(), response.code(), response.headers().toMultimap(), respBody);
         }
     }

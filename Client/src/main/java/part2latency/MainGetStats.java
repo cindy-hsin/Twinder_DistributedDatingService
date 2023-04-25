@@ -17,14 +17,14 @@ public class MainGetStats {
     final AtomicInteger numSuccessfulGetStatsReqs = new AtomicInteger(0);
     final AtomicInteger numFailedGetStatsReqs = new AtomicInteger(0);
 
-    BlockingQueue<List<Record>> getStatsRecordBuffer = new LinkedBlockingQueue<>(128);
+    BlockingQueue<List<Record>> getStatsRecordBuffer = new LinkedBlockingQueue<>(200);
 
 
 
     getStatsStartPostTime = System.currentTimeMillis();
-    CountDownLatch getStatsLatch = new CountDownLatch(128);
+    CountDownLatch getStatsLatch = new CountDownLatch(200);
     //Start the GET Stats thread
-    for (int i = 0; i < 128; i++) {
+    for (int i = 0; i < 200; i++) {
       new Thread(
           new GetStatsThread(numSuccessfulGetStatsReqs, numFailedGetStatsReqs, getStatsRecordBuffer, getStatsLatch)
       );
@@ -34,7 +34,7 @@ public class MainGetStats {
     getStatsEndPostTime = System.currentTimeMillis();
 
     // Update Metrics for GET records
-    for (int i = 0; i < 128; i++) {
+    for (int i = 0; i < 200; i++) {
       List<Record> threadRecords = getStatsRecordBuffer.take();
       getMetrics.updateRunningMetrics(threadRecords);
     }

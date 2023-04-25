@@ -7,10 +7,11 @@ public class MongoConnectionInfo {
   public static final String USER_NAME = "";
   public static final String PASSWORD = "";
 
-  public static final String HOST_NAME = "34.215.237.125"; // "172.31.21.114";
-
+  public static final String HOST_NAME = "172.31.23.108";
+  public static final String HOST_NAME2 = "172.31.22.161";
   public static final String PORT = "27017";
-
+  public static final String uri = "mongodb://" +
+      HOST_NAME + ":" + PORT + "," + HOST_NAME2 + ":" + PORT;
   public static final String DATABASE = "twinder";
 
   public static final String MATCH_COLLECTION = "Matches";
@@ -22,8 +23,7 @@ public class MongoConnectionInfo {
   // using builder pattern.
 //  public static final String uri = "mongodb://" + USER_NAME + ":" + PASSWORD +
 //      "@" + HOST_NAME + ":" + PORT;
-  public static final String uri = "mongodb://" +
-       HOST_NAME + ":" + PORT;
+
 
 
   public static MongoClientSettings buildMongoSettingsForGet(String servletClassName) {

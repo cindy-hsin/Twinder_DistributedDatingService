@@ -19,11 +19,16 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 @WebServlet(name = "assignment4.postservlet.SwipeServlet", value = "/swipe")
 public class SwipeServlet extends HttpServlet {
   private Producer<String, String> producer;
+  private Long startTime = Long.MAX_VALUE;
+  private Long endTime = 0L;
+
+  private Long sendClientTotalTime = 0L;
 
   @Override
   public void init() throws ServletException {
     super.init();
     this.producer = KafkaProducerFactory.getInstance().getKafkaProducer();
+
   }
 
   /**
@@ -34,11 +39,22 @@ public class SwipeServlet extends HttpServlet {
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
+    Long curStart = System.currentTimeMillis();
+    if (curStart < startTime)
+      startTime = curStart;
     this.processRequest(request, response);
+
+    Long curEnd = System.currentTimeMillis();
+    if (curEnd > endTime)
+      endTime = curEnd;
+    System.out.println("Start: " + startTime + " End: " + endTime);
+
   }
 
 
   private void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+
     response.setContentType("application/json");
     ResponseMsg responseMsg = new ResponseMsg();
     Gson gson = new Gson();
@@ -78,15 +94,19 @@ public class SwipeServlet extends HttpServlet {
     }
 
     // If request body is valid, send the Swipe data to RabbitMQ queue
+    Long startRespondToClient;
     if (this.sendMessageToBroker(direction, reqBodyJsonStr, gson)) { //TODO: Check argument type: JsonObject?? String??
+      startRespondToClient = System.currentTimeMillis();
       responseMsg.setMessage("Succeeded in sending message to Kafka!");
       response.setStatus(HttpServletResponse.SC_CREATED);
     } else {
+      startRespondToClient = System.currentTimeMillis();
       responseMsg.setMessage("Failed to send message to Kafka");
       response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
     response.getOutputStream().print(gson.toJson(responseMsg));
     response.getOutputStream().flush();
+
   }
 
 
@@ -140,7 +160,10 @@ public class SwipeServlet extends HttpServlet {
     String message = gson.toJson(swipeDetails);
 
     try {
+
+
       ProducerRecord<String, String> matchesRecord = new ProducerRecord<>(KafkaConnectionInfo.MATCHES_TOPIC, message);
+
       RecordMetadata sendMatchesRes = producer.send(matchesRecord).get();
       System.out.println("Finished! PostServlet send to Kafka Matches topic: " + sendMatchesRes);
       System.out.println("Matches send record metadata: " + sendMatchesRes.topic() +
@@ -149,8 +172,10 @@ public class SwipeServlet extends HttpServlet {
 
       ProducerRecord<String, String> statsRecord = new ProducerRecord<>(KafkaConnectionInfo.STATS_TOPIC, message);
       RecordMetadata sendStatsRes = producer.send(statsRecord).get();
+
       System.out.println("Finished! PostServlet send to Kafka Stats topic: "+ sendStatsRes);
       System.out.println("Stats send record metadata: " + sendStatsRes.topic() + sendStatsRes.hasOffset() + sendStatsRes.offset() + sendStatsRes.hasTimestamp() + sendStatsRes.timestamp());
+
 
       return true;
     } catch (Exception e) {
