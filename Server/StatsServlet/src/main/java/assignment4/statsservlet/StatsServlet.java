@@ -80,7 +80,7 @@ public class StatsServlet extends AbstractGetServlet {
         // Connect to MongoDB
         MongoDatabase database = this.mongoClient.getDatabase(MongoConnectionInfo.DATABASE);
         MongoCollection<Document> statsCollection = database.getCollection(MongoConnectionInfo.STATS_COLLECTION);
-        this.readStatsCollection(statsCollection, swiperId, gson, responseMsg, response, null, redisKey);
+        this.readStatsCollection(statsCollection, swiperId, gson, responseMsg, response, jedis, redisKey);
       }
     }
   }

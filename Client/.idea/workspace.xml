@@ -3,6 +3,8 @@
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
       <artifact name="Client:jar" />
+      <artifact name="ClientGetMatches:jar" />
+      <artifact name="ClientGetStats:jar" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -10,20 +12,31 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="24066aba-cd7f-436c-81d2-619451cfcb9e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/part2latency/MainGetMatches.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/part2latency/MainGetStats.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/part2latency/MainPost.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/thread/GetMatchesThread.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/thread/GetStatsThread.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/artifacts/ClientGetMatches_jar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/artifacts/ClientGetStats_jar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace 2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/META-INF/MANIFEST.MF" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/config/LoadTestConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/config/LoadTestConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/part2latency/MainPart2.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/thread/GetThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/thread/GetThread.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/swagger/client/ApiClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/swagger/client/ApiClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/part2latency/MainGetStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/part2latency/MainGetStats.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/part2latency/MainPost.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/part2latency/MainPost.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/thread/GetMatchesThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/thread/GetMatchesThread.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/thread/GetStatsThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/thread/GetStatsThread.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/thread/PostThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/thread/PostThread.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Server/Config/src/main/java/assignment4.config/constant/KafkaConnectionInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Server/Config/src/main/java/assignment4.config/constant/KafkaConnectionInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/Config/src/main/java/assignment4.config/constant/LoadTestConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Server/Config/src/main/java/assignment4.config/constant/LoadTestConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Server/Config/src/main/java/assignment4.config/constant/MongoConnectionInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Server/Config/src/main/java/assignment4.config/constant/MongoConnectionInfo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Server/Config/src/main/java/assignment4.config/constant/RedisConnectionInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Server/Config/src/main/java/assignment4.config/constant/RedisConnectionInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/Consumer/src/main/java/assignment4/consumer/ConsumerThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Server/Consumer/src/main/java/assignment4/consumer/ConsumerThread.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Server/PostServlet/src/main/java/assignment4/postservlet/KafkaProducerFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Server/PostServlet/src/main/java/assignment4/postservlet/KafkaProducerFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Server/StatsServlet/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Server/StatsServlet/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/PostServlet/src/main/java/assignment4/postservlet/SwipeServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Server/PostServlet/src/main/java/assignment4/postservlet/SwipeServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/StatsServlet/src/main/java/assignment4/statsservlet/StatsServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Server/StatsServlet/src/main/java/assignment4/statsservlet/StatsServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/out/artifacts/MatchesServlet_war_exploded/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/../Server/out/artifacts/MatchesServlet_war_exploded/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/out/artifacts/PostServlet_war/PostServlet_war.war.cpgz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/out/artifacts/PostServlet_war_exploded/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/../Server/out/artifacts/PostServlet_war_exploded/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Server/out/artifacts/StatsServlet_war_exploded/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/../Server/out/artifacts/StatsServlet_war_exploded/META-INF/MANIFEST.MF" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,6 +90,7 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
     "last_opened_file_path": "/Users/cindychen/Documents/NEU/Course_Material/cs6650/Assignment4/Client",
     "node.js.detected.package.eslint": "true",
@@ -154,6 +168,7 @@
       <workItem from="1680208816827" duration="54322000" />
       <workItem from="1681520445350" duration="23274000" />
       <workItem from="1681692662742" duration="10040000" />
+      <workItem from="1682273204562" duration="38326000" />
     </task>
     <servers />
   </component>

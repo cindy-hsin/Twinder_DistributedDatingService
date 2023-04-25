@@ -105,7 +105,7 @@ public class PostThread extends AbsSendRequestThread implements Runnable{
       } catch (ApiException e) {
 //        System.out.println("Failed to send request: " + e.getCode() + ": " + e.getResponseBody() + ".request.Request details:"
 //            + request.getSwipeDir() + " " + request.getBody().toString() + ". Go retry");
-        System.out.println("POST: RETRY Request");
+        System.out.println("POST: RETRY Request: " + e.getMessage() + " " +e.getResponseBody() + " " +e.getCode());
         retry --;
         if (retry == 0) {
           endTime = System.currentTimeMillis();

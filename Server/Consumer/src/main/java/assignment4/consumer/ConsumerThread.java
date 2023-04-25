@@ -40,6 +40,9 @@ public abstract class ConsumerThread implements Runnable, ConsumerRebalanceListe
   private final String topic;
 
 
+  private Long startTime;
+
+
   public ConsumerThread(String topic, String groupId) {
     // Set up Kafka Consumer, Connect to Kafka Broker
     Properties config = new Properties();
@@ -69,6 +72,8 @@ public abstract class ConsumerThread implements Runnable, ConsumerRebalanceListe
 
   @Override
   public void run() {
+    startTime = System.currentTimeMillis();
+
     try {
       this.consumer.subscribe(Collections.singleton(this.topic), this);    // subscribe to the topic
       while (!this.stopped.get()) {
@@ -80,9 +85,11 @@ public abstract class ConsumerThread implements Runnable, ConsumerRebalanceListe
         this.handleFetchedRecords(records);
         System.out.println("Before checkActiveTasks");
         this.checkActiveTasks();   // check if any task is finished
-        System.out.println("Before commit offset!");
+        System.out.println("Before commitOffset!");
         this.commitOffsets();
-        System.out.println("Finished commit offset!");
+        System.out.println("Finished commitOffset!");
+        System.out.println("****** Start Time: "+ startTime + " ******");
+        System.out.println("****** End Time: "+ System.currentTimeMillis() + " ******");
       }
     } catch (WakeupException we) {
       if (!this.stopped.get())    // if this.stopped is false, meaning the Consumer is not intentionally stopped (by calling stopConsuming()). ->Some errors have happened and forced Consumer to wake up.
@@ -167,7 +174,7 @@ public abstract class ConsumerThread implements Runnable, ConsumerRebalanceListe
         if(!this.offsetsToCommit.isEmpty()) {
           System.out.println("BEFORE COMMIT: offsetsToCommit: "+ this.offsetsToCommit.entrySet());
           this.consumer.commitSync(this.offsetsToCommit);   // Synchronously commit. Ensure commit offsets only after records are processed
-          System.out.println("FINISHED COMMIT! ");
+          System.out.println("========= FINISHED COMMIT! ========");
           this.offsetsToCommit.clear();
           System.out.println("Global offsets cleared!");
         } else {
