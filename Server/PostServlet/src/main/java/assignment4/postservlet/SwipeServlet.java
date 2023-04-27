@@ -179,44 +179,7 @@ public class SwipeServlet extends HttpServlet {
 //      Logger.getLogger(SwipeServlet.class.getName()).info("Failed to send message to Kafka: " + e);
 //      return false;
 //    }
-
-    // async
-//    try {
-//      ProducerRecord<String, String> matchesRecord = new ProducerRecord<>(KafkaConnectionInfo.MATCHES_TOPIC, message);
-//      producer.send(matchesRecord, new Callback() {
-//        @Override
-//        public void onCompletion(RecordMetadata metadata, Exception exception) {
-//          if (exception == null) {
-//            System.out.println("Finished! PostServlet send to Kafka Matches topic: " + metadata);
-//            System.out.println("Matches send record metadata: " + metadata.topic() + metadata.hasOffset() + metadata.offset() + metadata.hasTimestamp() + metadata.timestamp());
-//          } else {
-//            Logger.getLogger(SwipeServlet.class.getName()).info("Failed to send message to Kafka Matches topic: " + exception);
-//          }
-//        }
-//      });
-//
-//      ProducerRecord<String, String> statsRecord = new ProducerRecord<>(KafkaConnectionInfo.STATS_TOPIC, message);
-//      producer.send(statsRecord, new Callback() {
-//        @Override
-//        public void onCompletion(RecordMetadata metadata, Exception exception) {
-//          if (exception == null) {
-//            System.out.println("Finished! PostServlet send to Kafka Stats topic: " + metadata);
-//            System.out.println("Stats send record metadata: " + metadata.topic() + metadata.hasOffset() + metadata.offset() + metadata.hasTimestamp() + metadata.timestamp());
-//          } else {
-//            Logger.getLogger(SwipeServlet.class.getName()).info("Failed to send message to Kafka Stats topic: " + exception);
-//          }
-//        }
-//      });
-//
-//      return true;
-//    } catch (Exception e) {
-//      Logger.getLogger(SwipeServlet.class.getName()).info("Failed to send message to Kafka: " + e);
-//      return false;
-//    }
-
     try {
-
-
       ProducerRecord<String, String> matchesRecord = new ProducerRecord<>(KafkaConnectionInfo.MATCHES_TOPIC, message);
 
       producer.send(matchesRecord, (metadata, exception) -> {
